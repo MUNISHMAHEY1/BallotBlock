@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from decimal import Decimal
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
 
       
 class ElectionConfig(models.Model):
@@ -16,9 +18,11 @@ class ElectionConfig(models.Model):
     min_votes_in_block = models.IntegerField(null=False, blank=False, default=50)
     min_votes_in_last_block = models.IntegerField(null=False, blank=False, default=50)
     attendance_rate = models.DecimalField(null=False, blank=False, max_digits=3, decimal_places=2, validators=[MinValueValidator(Decimal('0.01')), MaxValueValidator(Decimal('0.99'))])
+    locked = models.BooleanField(default=False)
 
     def __str__(self):
         return self.description
+
 
 class Elector(models.Model):
     user = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE)

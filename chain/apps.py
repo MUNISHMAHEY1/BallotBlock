@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class ChainConfig(AppConfig):
+class ChainAppConfig(AppConfig):
     name = 'chain'

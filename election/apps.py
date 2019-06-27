@@ -1,5 +1,7 @@
 from django.apps import AppConfig
 
-
-class ElectionConfig(AppConfig):
+class ElectionAppConfig(AppConfig):
     name = 'election'
+
+    def ready(self):
+        import election.signals
