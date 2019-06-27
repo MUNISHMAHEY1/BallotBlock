@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load render_table from django_tables2 %}
+{% load static %}
+
+{% block extrahead %}
+<script>
+$(document).ready(function() {
+    $('#rank_hitory').DataTable();
+    $('#attendance').DataTable();
+} );
+</script>
+{% endblock extrahead %}
+
+
+{% block content %}
+<nav class="navbar navbar-dark bg-primary" style="margin-top: 25px;margin-bottom: 25px;">
+    <a class="navbar-brand" href="#">Rank History - {{student.name}}</a>
+</nav>
+{% for rh in rank_history %}
+    {% cycle '1' '2' '3' as row silent %}
+    {% if row == '1' %}
+        <div class="row" style="margin-top: 15px;">
+    {% endif %}
+        <div class="col-md-4">
+            <div class="card">
+                {% if rh.rank__description|lower in 'white,none' %}
+                    <div class="card-header bg-light">Exam Date: {{rh.exam_date|date:'Y-m-d H:i'}}</div>
+                {% elif rh.rank__description|lower in 'yellow' %}
+                    <div class="card-header bg-warning">Exam Date: {{rh.exam_date|date:'Y-m-d H:i'}}</div>
+                {% else %}
+                    <div class="card-header" style="background-color:{{rh.rank__description|lower}};">Exam Date: {{rh.exam_date|date:'Y-m-d H:i'}}</div>
+                {% endif %}
+                <div class="card-body">
+                    {% for att in rh.attendances %}
+                        <li class="list-group-item">
+                            {{att.class_date|date:'Y-m-d H:i'}}
+                            <div class="float-right">
+                            <a href="{% url 'attendance_delete' id=att.id %}"><i class="fas fa-trash-alt"></i></a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </div>
+                <div class="card-footer">Attendance: {{ rh.attendances|length }}</div>
+            </div>
+        </div>
+    {% if row == '3' or forloop.last %}
+        </div>
+    {% endif %}
+{% endfor %}
+
+{% endblock content %}

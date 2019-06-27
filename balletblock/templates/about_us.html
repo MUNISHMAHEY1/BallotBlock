@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+
+<h1>Developement Team</h1>
+
+<div class="row">
+  <table class="table table-stripes table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Student ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>104934797</td>
+          <td>Fabio Ribeiro Santiago</td>
+          <td><a href="mailto:santia11@uwindsor.ca">santia11@uwindsor.ca</a></td>
+        </tr>
+        <tr>
+          <td>105099194</td>
+          <td>Sarath Pulikkal</td>
+          <td><a href="mailto:pulikka@uwindsor.ca">pulikka@uwindsor.ca</a></td>
+        </tr>
+        <tr>
+          <td>105146209</td>
+          <td>Munish</td>
+          <td><a href="mailto:munish@uwindsor.ca">munish@uwindsor.ca</a></td>
+        </tr>
+      </tbody>
+  </table>
+</div>
+{% endblock content %}

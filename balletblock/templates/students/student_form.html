@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block extrahead %}
+    {{bloc.super}}
+    
+    <script type="text/javascript">
+        $( document ).ready(function() {
+
+            if (! $("#id_student-0-contact_type").val()) {
+                $("#id_student-0-contact").prop('disabled', true);
+                $("#id_student-0-first_name").prop('disabled', true);
+                $("#id_student-0-last_name").prop('disabled', true);
+                $("#id_student-0-phone_number").prop('disabled', true);
+                $("#id_student-0-email").prop('disabled', true);
+            }
+
+            if (! $("#id_student-1-contact_type").val()) {
+                $("#id_student-1-contact").prop('disabled', true);
+                $("#id_student-1-first_name").prop('disabled', true);
+                $("#id_student-1-last_name").prop('disabled', true);
+                $("#id_student-1-phone_number").prop('disabled', true);
+                $("#id_student-1-email").prop('disabled', true);
+            }
+
+            if ($("#id_student-0-contact").val()) {
+                $("#id_student-0-first_name").prop('disabled', true);
+                $("#id_student-0-last_name").prop('disabled', true);
+                $("#id_student-0-phone_number").prop('disabled', true);
+                $("#id_student-0-email").prop('disabled', true);
+            }
+
+            if ($("#id_student-1-contact").val()) {
+                $("#id_student-1-first_name").prop('disabled', true);
+                $("#id_student-1-last_name").prop('disabled', true);
+                $("#id_student-1-phone_number").prop('disabled', true);
+                $("#id_student-1-email").prop('disabled', true);
+            }
+
+            $("#id_student-0-contact_type").on('change', function() {
+                if (this.value) {
+                    // Enable all
+                    $("#id_student-0-contact").prop('disabled', false);
+                    $("#id_student-0-first_name").prop('disabled', false);
+                    $("#id_student-0-last_name").prop('disabled', false);
+                    $("#id_student-0-phone_number").prop('disabled', false);
+                    $("#id_student-0-email").prop('disabled', false);
+                } else {
+                    // Clear all
+                    $("#id_student-0-contact").val("");
+                    $("#id_student-0-first_name").val("");
+                    $("#id_student-0-last_name").val("");
+                    $("#id_student-0-phone_number").val("");
+                    $("#id_student-0-email").val("");
+                    // Disable all
+                    $("#id_student-0-contact").prop('disabled', true);
+                    $("#id_student-0-first_name").prop('disabled', true);
+                    $("#id_student-0-last_name").prop('disabled', true);
+                    $("#id_student-0-phone_number").prop('disabled', true);
+                    $("#id_student-0-email").prop('disabled', true);
+                }
+            });
+
+            $("#id_student-1-contact_type").on('change', function() {
+                if (this.value) {
+                    // Enable all
+                    $("#id_student-1-contact").prop('disabled', false);
+                    $("#id_student-1-first_name").prop('disabled', false);
+                    $("#id_student-1-last_name").prop('disabled', false);
+                    $("#id_student-1-phone_number").prop('disabled', false);
+                    $("#id_student-1-email").prop('disabled', false);
+                } else {
+                    // Clear all
+                    $("#id_student-1-contact").val("");
+                    $("#id_student-1-first_name").val("");
+                    $("#id_student-1-last_name").val("");
+                    $("#id_student-1-phone_number").val("");
+                    $("#id_student-1-email").val("");
+
+                    // Disable all
+                    $("#id_student-1-contact").prop('disabled', true);
+                    $("#id_student-1-first_name").prop('disabled', true);
+                    $("#id_student-1-last_name").prop('disabled', true);
+                    $("#id_student-1-phone_number").prop('disabled', true);
+                    $("#id_student-1-email").prop('disabled', true);
+                }
+            });
+
+
+
+            $("#id_student-0-contact").on('change', function() {
+                if (this.value) {
+                    $("#id_student-0-first_name").val("");
+                    $("#id_student-0-last_name").val("");
+                    $("#id_student-0-phone_number").val("");
+                    $("#id_student-0-email").val("");
+                    $("#id_student-0-first_name").prop('disabled', true);
+                    $("#id_student-0-last_name").prop('disabled', true);
+                    $("#id_student-0-phone_number").prop('disabled', true);
+                    $("#id_student-0-email").prop('disabled', true);
+                } else {
+                    $("#id_student-0-first_name").prop('disabled', false);
+                    $("#id_student-0-last_name").prop('disabled', false);
+                    $("#id_student-0-phone_number").prop('disabled', false);
+                    $("#id_student-0-email").prop('disabled', false);
+                }
+            });
+
+            $("#id_student-1-contact").on('change', function() {
+                if (this.value) {
+                    $("#id_student-1-first_name").val("");
+                    $("#id_student-1-last_name").val("");
+                    $("#id_student-1-phone_number").val("");
+                    $("#id_student-1-email").val("");
+                    $("#id_student-1-first_name").prop('disabled', true);
+                    $("#id_student-1-last_name").prop('disabled', true);
+                    $("#id_student-1-phone_number").prop('disabled', true);
+                    $("#id_student-1-email").prop('disabled', true);
+                } else {
+                    $("#id_student-1-first_name").prop('disabled', false);
+                    $("#id_student-1-last_name").prop('disabled', false);
+                    $("#id_student-1-phone_number").prop('disabled', false);
+                    $("#id_student-1-email").prop('disabled', false);
+                }
+            });
+
+        });
+        
+    </script>
+    
+{% endblock extrahead %}
+
+{% block messages %}
+    {{bloc.super}}
+    {% for message in form.errors %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message|safe }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+    {% for message in formset.errors %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message|safe }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+
+{% endblock messages %}
+
+
+{% block content %}
+<form method="post" action="{{ request.path }}">
+    <h1>Student</h1>
+    {% crispy form %} 
+    <h1>Contacts</h1>
+    {{ formset.management_form|crispy }}
+    <table class="table table-striped table-condensed">
+        {% for f in formset.forms %}
+        <tr class="{% cycle 'contact1' 'contact2' %}">
+            {% crispy f %}
+            {% if f.fields.id.initial and formset.can_delete %}
+                {{ f.DELETE }} <label>{{ f.DELETE.label }}</label>
+            {% endif %}
+        </tr>
+        <hr>
+        {% endfor %}
+    </table>
+
+    <input type="submit" class="btn btn-primary" value="Save">
+    
+</form>
+
+<!--
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="{% static 'formset/jquery.formset.js' %}"></script>
+<script type="text/javascript">
+    $('.formset_row').formset({
+        addText: 'add contact',
+        deleteText: 'remove',
+        prefix: 'familymember_set'
+    });
+</script>
+-->
+{% endblock content %}
