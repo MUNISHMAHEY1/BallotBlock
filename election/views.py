@@ -3,15 +3,28 @@ from election.models import Elector, Candidate, ElectionConfig, Position
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.contrib.admin.views.decorators import staff_member_required
+import datetime
+from election.business import ElectionBusiness
+from django.contrib import messages
+from election.forms import VoteForm
 
 # Create your views here.
 
 def vote(request):
-    pass
+    eb = ElectionBusiness()
+    context = {}
+    if eb.isOccurring():
+        positions = Position.objects.all()
+        context['postitions'] = positions
+    else:
+        messages.warning(request, 'Election is not open yet.')
+    
+    return render(request, 'vote.html', context)
 
 @transaction.atomic
 @staff_member_required
-def config_mock_election(request, elector_quantity=100, template_name='mock_election.html'):
+def config_mock_election(request, elector_quantity=1000, template_name='mock_election.html'):
+
     Elector.objects.all().delete()
     Candidate.objects.all().delete()
     Position.objects.all().delete()

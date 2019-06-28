@@ -31,7 +31,8 @@
     {% endblock nav %}
 
     <main role="main" class="container">
-        {% block messages %}
+        {% block bmessages %}
+          {% if messages %}
             {% for message in messages %}
               <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
                 {{ message|safe }}
@@ -40,7 +41,8 @@
                 </button>
               </div>
             {% endfor %}
-        {% endblock messages %}
+          {% endif %}
+        {% endblock bmessages %}
         
         {% block content %}
         {% endblock content %}

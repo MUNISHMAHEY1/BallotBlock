@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+    {% if postitions %}
+        <div id="id_positions_form" class="form-horizontal">
+		<input id="id_number_of_postitions" type="hidden" value="{{number_of_postitions}}">
+		{% csrf_token %}
+		{%for p in postitions %}
+			<div class="form-group row">
+				<div id="position{{forloop.counter}}" class="postition" postition-db-id="{{p.id}}">
+					<div id="id_panel{{p.id}}" class="panel panel-primary">
+						<div class="panel-heading">
+							<strong>{{forloop.counter}}. {{p.description}}</strong>
+							<div id="id_result{{p.id}}" class="pull-right"></div>
+						</div>
+						<div class="panel-body">
+						{% for c in p.candidate_set.all %}
+							<div class="radio">
+								<label id="id_candidate{{c.id}}" class="alternative">
+									<input type="radio" name="position{{forloop.parentloop.counter}}" value="{{p.id}}">
+									{{ c.name }}
+								</label>
+							</div>
+						{% endfor %}
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+		<div class="row">
+			<div class="navbar pull-right">
+				<a id="id_btn_submit_vode" class="btn btn-primary" href="#" >Vote</a>
+			</div>
+        </div>
+        </div>
+    {% endif %}
+{% endblock content %}

@@ -11,14 +11,11 @@ class ElectionBusiness():
         return None
 
     def canModify(self, request=None):
-        ec = self.getCurrentElectionConfig()
-        if ec:
-            now = datetime.datetime.now()
-            if ec.locked and now >= ec.start_time and now <= ec.end_time:
-                if request:
-                    msg = 'Election is locked and end time is {}'.format(ec.end_time.isoformat())
-                    messages.error(request, msg)
-                return False
+        if self.isOccurring():
+            if request:
+                msg = 'Election is locked and end time is {}'.format(ec.end_time.isoformat())
+                messages.error(request, msg)
+            return False
         return True
 
     def canAdd(self, request=None):
@@ -28,4 +25,13 @@ class ElectionBusiness():
                 messages.error(request, msg)
             return False
         return True
+
+    def isOccurring(self):
+        ec = self.getCurrentElectionConfig()
+        now = datetime.datetime.now()
+        print(now.isoformat())
+        if ec:
+            if now >= ec.start_time and now <= ec.end_time and ec.locked:
+                return True
+        return False
         
