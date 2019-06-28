@@ -14,10 +14,10 @@ class ElectionConfig(models.Model):
     start_time = models.DateTimeField(null=False, blank=False)
     end_time = models.DateTimeField(null=False, blank=False)
     block_time_generation = models.IntegerField(default=15)
-    guess_rate = models.DecimalField(null=False, blank=False, max_digits=5,decimal_places=4, validators=[MinValueValidator(Decimal('0.0001')), MaxValueValidator(Decimal('0.9999'))])
+    guess_rate = models.DecimalField(null=False, blank=False, max_digits=5,decimal_places=4, validators=[MinValueValidator(Decimal('0.0001')), MaxValueValidator(Decimal('0.9999'))], default=0.3)
     min_votes_in_block = models.IntegerField(null=False, blank=False, default=50)
     min_votes_in_last_block = models.IntegerField(null=False, blank=False, default=50)
-    attendance_rate = models.DecimalField(null=False, blank=False, max_digits=3, decimal_places=2, validators=[MinValueValidator(Decimal('0.01')), MaxValueValidator(Decimal('0.99'))])
+    attendance_rate = models.DecimalField(null=False, blank=False, max_digits=3, decimal_places=2, validators=[MinValueValidator(Decimal('0.01')), MaxValueValidator(Decimal('0.99'))], default=0.5)
     locked = models.BooleanField(default=False)
 
     def __str__(self):

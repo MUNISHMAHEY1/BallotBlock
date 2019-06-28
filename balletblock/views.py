@@ -14,10 +14,14 @@ from django_tables2 import RequestConfig
 
 @login_required
 def home(request):
+	election_is_occurring = False
+
+	context = {'election_is_occurring':election_is_occurring}
+
 	if request.user.is_superuser:
-		return render(request, 'home.html')
+		return render(request, 'home.html', context)
 	else:
-		return render(request, 'vote.html')
+		return render(request, 'vote.html', context)
 
 @login_required
 def about_us(request):
@@ -49,4 +53,5 @@ def hash_test(request):
 	print("SHA1: {0}".format(sha1.hexdigest()))
 
 	return HttpResponse("SHA1: {0}".format(sha1.hexdigest()))
+
 

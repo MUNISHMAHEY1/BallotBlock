@@ -27,93 +27,9 @@
 
     <!-- https://bootswatch.com/sandstone/ -->
     {% block nav %}
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <a class="navbar-brand" href="#">BalletBlock</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      
-        <div class="collapse navbar-collapse" id="navbarColor01">
-          <ul class="navbar-nav mr-auto">
-            {% if request.user.is_superuser %}
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Election
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="{% url 'block_list' %}">Block Chain</a>
-                    <a class="dropdown-item" href="#">Configuration</a>
-                    <a class="dropdown-item" href="#">Results</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#CleanElectionModal">Clean</a>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Electors</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Candidates</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Positions</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="{% url 'about_us' %}">About us</a>
-              </li>
-            {% else %}
-              <li class="nav-item">
-                <a class="nav-link" href="#">Vote</a>
-              </li>
-            {% endif %}
-          </ul>
-          {% if request.user.is_authenticated %}
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{request.user}}
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
-                        </div>
-                    </li>
-                </ul>
-          {% endif %}
-        </div>
-      </nav>
-
-
-      <!-- The Modal -->
-      <div class="modal fade" id="CleanElectionModal">
-        <div class="modal-dialog">
-          <div class="modal-content">
-
-            <!-- Modal Header -->
-            <div class="modal-header">
-              <h4 class="modal-title">Clean Election</h4>
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-
-            <!-- Modal body -->
-            <div class="modal-body">
-              <p>Clean election will remove all data (candidates, electors, positions, votes, etc...)</p>
-              <p>Do you really want to clean all election data?</p>
-            </div>
-
-            <!-- Modal footer -->
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-              <button type="button" class="btn btn-danger" data-dismiss="modal">Clean</button>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-
-
-
+      {% include "menu.html" %}
     {% endblock nav %}
+
     <main role="main" class="container">
         {% block messages %}
             {% for message in messages %}
