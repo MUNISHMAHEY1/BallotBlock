@@ -15,7 +15,14 @@ def vote(request):
     context = {}
     if eb.isOccurring():
         positions = Position.objects.all()
-        context['postitions'] = positions
+        if request.method == 'POST':
+            for p in positions:
+                pname = 'position{}'.format(p.id)
+                print(request.POST.get(pname,""))
+        
+        context['positions'] = positions
+        context['quantity_of_positions'] = positions.count()
+        
     else:
         messages.warning(request, 'Election is not open yet.')
     

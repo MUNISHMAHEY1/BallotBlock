@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'balletblock',
     'election',
     'chain',
+    'vote',
 ]
 
 MIDDLEWARE = [
@@ -86,11 +87,13 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'election.sqlite3'),
     },
-    'votes': {
+    'vote': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'votes.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'vote.sqlite3'),
     }
 }
+
+DATABASE_ROUTERS = ['balletblock.router.DatabaseRouter']
 
 
 # Password validation
