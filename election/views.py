@@ -11,7 +11,7 @@ def vote(request):
 
 @transaction.atomic
 @staff_member_required
-def config_mock_election(request, elector_quantity=1000, template_name='mock_election.html'):
+def config_mock_election(request, elector_quantity=100, template_name='mock_election.html'):
     Elector.objects.all().delete()
     Candidate.objects.all().delete()
     Position.objects.all().delete()

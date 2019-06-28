@@ -31,7 +31,7 @@ class ElectionConfigAdmin(ElectionAdminControl):
 
 class ElectorAdmin(ElectionAdminControl):
     list_display = ['id', 'user']
-    list_editable = ['user']
+    #list_editable = ['user']
 
 class PositionAdmin(ElectionAdminControl):
     list_display = ['id', 'description', 'quantity']

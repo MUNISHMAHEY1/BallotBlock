@@ -35,7 +35,7 @@ class Position(models.Model):
     quantity = models.IntegerField(null=False, blank=False, default=1)
 
     def __str__(self):
-        return self.user.description
+        return self.description
 
 class Candidate(models.Model):
     name = models.CharField(max_length=300, unique=True, null=False, blank=False)
