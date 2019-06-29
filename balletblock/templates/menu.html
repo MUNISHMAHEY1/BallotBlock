@@ -35,12 +35,17 @@
           </li>
         {% else %}
           <li class="nav-item">
-            <a class="nav-link" href="#">Vote</a>
+            <a class="nav-link" href="{% url 'vote' %}">Vote</a>
           </li>
         {% endif %}
       </ul>
       {% if request.user.is_authenticated %}
             <ul class="navbar-nav">
+                {% if election_is_occurring %}
+                  <li class="nav-item">
+                      <button type="button" class="btn btn-outline-warning">Election is Occurring</button>
+                  </li>
+                {% endif %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     {{request.user}}

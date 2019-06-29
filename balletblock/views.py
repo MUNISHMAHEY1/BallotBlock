@@ -16,10 +16,11 @@ from django.contrib import messages
 @login_required
 def home(request):
 	if request.user.is_superuser:
-		eb = ElectionBusiness()
-		election_is_occurring = eb.isOccurring()
-		context = {'election_is_occurring':election_is_occurring}
-		return render(request, 'home.html', context)
+		#eb = ElectionBusiness()
+		#election_is_occurring = eb.isOccurring()
+		#context = {'election_is_occurring':election_is_occurring}
+		#return render(request, 'home.html', context)
+		return render(request, 'home.html')
 	else:
 		return redirect('vote')
 		#return render(request, 'vote.html', context)

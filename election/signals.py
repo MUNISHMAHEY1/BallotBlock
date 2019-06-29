@@ -15,3 +15,4 @@ def canModify(sender, instance, **kwargs):
     if eb.isOccurring():
         raise ValidationError('Election is occourring and can not be changed.')
 
+

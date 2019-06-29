@@ -24,6 +24,7 @@ urlpatterns = [
     path('about_us/', views.about_us, name='about_us'),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('election/', include('election.urls')),
     path('chain/', include('chain.urls')),
+    path('election/', include('election.urls')),
+    path('vote/', include('vote.urls')),
 ]
