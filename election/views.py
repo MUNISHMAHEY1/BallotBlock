@@ -10,6 +10,7 @@ from election.forms import VoteForm
 
 # Create your views here.
 
+
 def vote(request):
     eb = ElectionBusiness()
     context = {}
@@ -18,7 +19,8 @@ def vote(request):
         if request.method == 'POST':
             for p in positions:
                 pname = 'position{}'.format(p.id)
-                print(request.POST.get(pname,""))
+                request.POST.get(pname,"")
+                
         
         context['positions'] = positions
         context['quantity_of_positions'] = positions.count()
@@ -30,7 +32,7 @@ def vote(request):
 
 @transaction.atomic
 @staff_member_required
-def config_mock_election(request, elector_quantity=1000, template_name='mock_election.html'):
+def config_mock_election(request, elector_quantity=500, template_name='mock_election.html'):
 
     Elector.objects.all().delete()
     Candidate.objects.all().delete()
@@ -44,17 +46,27 @@ def config_mock_election(request, elector_quantity=1000, template_name='mock_ele
     for name in names:
         c = Candidate.objects.create(position=position, name=name)
         c.save()
+
+    position = Position.objects.create(description="Best city to live in Canada")
+    position.save()
+
+    names = ['Toronto', 'Vancouver', 'Windsor', 'Montreal', 'Quebec', 'Ottawa']
+    for name in names:
+        c = Candidate.objects.create(position=position, name=name)
+        c.save()
+    
     
     i = 1
+    s = len(str(elector_quantity))
     while i < elector_quantity:
-        username = ''.join(('user', str(i).zfill(4)))
+        username = ''.join(('user', str(i).zfill(s)))
         email = ''.join((username, '@balletblock.com'))
-        password = ''.join(('BalletBlock', str(i).zfill(4))) 
+        password = ''.join(('BalletBlock', str(i).zfill(s) ))
         user = User.objects.create_user(username=username,
                                  email=email,
                                  password=password,
                                  first_name='user',
-                                 last_name=str(i).zfill(4))
+                                 last_name=str(i).zfill(s))
         user.save()
         e = Elector.objects.create(user=user)
         e.save()

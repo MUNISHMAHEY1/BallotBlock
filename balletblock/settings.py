@@ -86,14 +86,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'election.sqlite3'),
-    },
-    'vote': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'vote.sqlite3'),
+        #'NAME': ':memory:'
     }
 }
 
-DATABASE_ROUTERS = ['balletblock.router.DatabaseRouter']
+# DATABASE_ROUTERS = ['balletblock.router.DatabaseRouter']
 
 
 # Password validation
