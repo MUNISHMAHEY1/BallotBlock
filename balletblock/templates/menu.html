@@ -3,7 +3,7 @@
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-  
+
     <div class="collapse navbar-collapse" id="navbarColor01">
       <ul class="navbar-nav mr-auto">
         {% if request.user.is_superuser %}
@@ -14,7 +14,7 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                 <a class="dropdown-item" href="{% url 'block_list' %}">Block Chain</a>
                 {% if not election_is_occurring %}
-                <a class="dropdown-item" href="#">Configuration</a>
+                <a class="dropdown-item" href="{% url 'electionconfig' %}">Configuration</a>
                 <a class="dropdown-item" href="#">Results</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#CleanElectionModal">Clean</a>

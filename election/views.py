@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from election.business import ElectionBusiness
 from django.contrib import messages
-from election.forms import VoteForm
+from election.forms import VoteForm,ElectionConfigForm
 
 @transaction.atomic
 @staff_member_required
@@ -33,8 +33,8 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
     for name in names:
         c = Candidate.objects.create(position=position, name=name)
         c.save()
-    
-    
+
+
     i = 1
     s = len(str(elector_quantity))
     while i < elector_quantity:
@@ -52,3 +52,19 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
         i = i + 1
 
     return render(request, template_name)
+
+def electionConfiguration(request):
+    form = ElectionConfigForm()
+    return render(request,'electionconfig.html',{'form':form})
+
+    # if request.POST:
+	#form = ElectionConfigForm(request.POST)
+    #
+	# 	if form.is_valid():
+	# 		form.save()
+	# 		return redirect('electionconfig')
+	# 	else:
+	# 		return render(request, template_name, {'form':form})
+	# else:
+	# 	form = ElectionConfigForm()
+	# return render(request, template_name, {'form':form})
