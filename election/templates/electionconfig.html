@@ -1,15 +1,8 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags%}
 
-
-
-<!-- {% block extrahead %}
-    {{bloc.super}}
-
-{% endblock extrahead %} -->
-
-<!-- {% block messages %}
+{% block messages %}
     {{bloc.super}}
     {% for message in form.errors %}
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -20,7 +13,8 @@
         </div>
     {% endfor %}
 
-{% endblock messages %} -->
+{% endblock messages %}
+
 
 {% block content %}
 <form method="post" action="{{ request.path }}">

@@ -36,13 +36,13 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
     for name in names:
         c = Candidate.objects.create(position=position, name=name)
         c.save()
-    
-    
-    # Create "elector_quantity" of electors 
+
+
+    # Create "elector_quantity" of electors
     # username: userXXX
-    # pass: BalletBlockXXX 
+    # pass: BalletBlockXXX
     # where XXX is ther user number from 001 to elector_quantity
-    
+
     i = 1
     s = len(str(elector_quantity))
     while i < elector_quantity:
@@ -61,18 +61,31 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
 
     return render(request, template_name)
 
+
 def electionConfiguration(request):
     form = ElectionConfigForm()
-    return render(request,'electionconfig.html',{'form':form})
+    occurring = ElectionBusiness.isOccurring
+    if request.POST:
+        form = ElectionConfigForm(request.POST)
+        locked = request.POST.get('locked')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
 
-    # if request.POST:
-	#form = ElectionConfigForm(request.POST)
-    #
-	# 	if form.is_valid():
-	# 		form.save()
-	# 		return redirect('electionconfig')
-	# 	else:
-	# 		return render(request, template_name, {'form':form})
-	# else:
-	# 	form = ElectionConfigForm()
-	# return render(request, template_name, {'form':form})
+        if locked:
+            if occurring:
+                if form.is_valid():
+                    form.save()
+                    form = ElectionConfigForm()
+                    msg = 'The Configuration for upcomming election has been set. Start time of election is {td1} and End time is {td2}'.format(td1=start_time, td2= end_time)
+                    messages.success(request, msg)
+                    return render(request,'electionconfig.html',{'form':form})
+                else:
+                    msg = 'The form filled is not valid please check if all the fields are entered properly.'
+                    messages.success(request, msg)
+            else:
+                 msg = 'The election is going on and the end time is {}.'.format(end_time)
+                 messages.success(request, msg)
+        else:
+            msg = 'After filling up the configurations please check if the election is locked.'
+            messages.success(request,msg)
+    return render(request,'electionconfig.html',{'form':form})
