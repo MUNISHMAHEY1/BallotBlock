@@ -74,17 +74,29 @@ class HashCalculator():
                                 m.update(data)
                         hash_dict[os.path.join(root, filename)] = m.hexdigest()
 
-        '''
-        for filename in os.listdir(settings.BASE_DIR):
-            m = hashlib.sha512()
-            if not os.path.isdir(filename):
-                with open(filename, 'rb') as f:
-                    while True:
-                        data = f.read(BUF_SIZE)
-                        if not data:
-                            break
-                        m.update(data)
-            hash_dict[os.path.abspath(filename)] = m.hexdigest()
-        '''
-
         return {'souce_code':hash_dict}
+
+
+class BBlock():
+
+    def __init__(self, source_code, database):
+        self.source_code = source_code
+        self.database = database
+
+    def write(self):
+        # TODO: Implement the write method to write in a file
+        pass
+
+    def velidate(self):
+        # TODO: Implement the write method to write in a file
+        pass
+
+class BChain():
+
+    def addBlock(self):
+        # TODO: Implement add new block in a chain
+        pass
+
+    def addBlock(self):
+        # TODO: Validate the chain
+        pass
