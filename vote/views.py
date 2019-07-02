@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from election.business import ElectionBusiness
 from django.contrib import messages
+from django.core.serializers.json import DjangoJSONEncoder
+import json
 
 
 # Create your views here.
@@ -45,3 +47,15 @@ def vote(request, template_name='vote.html'):
         messages.warning(request, 'Election is not open yet.')
     
     return render(request, template_name, context)
+
+
+def election_results(request, template_name='election_results.html'):
+
+    data = []
+    positions = Position.objects.all()
+    for p in positions:
+        candidate_vote = CandidateVote.objects.filter(candidate__position=p).values('candidate__name', 'candidate__position__description', 'quantity' )
+        candidate_vote_json_str = json.dumps(list(candidate_vote), cls=DjangoJSONEncoder)
+        data.append(candidate_vote_json_str)
+  
+    return render(request, template_name, context={'results_data':json.dumps(data, cls=DjangoJSONEncoder), 'positions':positions})

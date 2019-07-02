@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path
 from balletblock import views
 from django.urls import include
-
+from django.conf.urls.static import static
+from balletblock import settings
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -27,4 +28,4 @@ urlpatterns = [
     path('chain/', include('chain.urls')),
     path('election/', include('election.urls')),
     path('vote/', include('vote.urls')),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
