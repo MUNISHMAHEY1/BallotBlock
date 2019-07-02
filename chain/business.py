@@ -93,6 +93,13 @@ class BBlock():
 
 class BChain():
 
+
+
+    def __init__(self):
+        # TODO: Read all the blocks
+        # self.blocks = readBlocks
+        pass
+
     def addBlock(self):
         # TODO: Implement add new block in a chain
         pass
