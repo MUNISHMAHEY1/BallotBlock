@@ -1,5 +1,6 @@
 from django.core.serializers.json import DjangoJSONEncoder
 from election.models import ElectionConfig, Candidate, Elector, Position
+from vote.models import Voted, CandidateVote
 from django.contrib.auth.models import User
 import hashlib
 import json
@@ -85,15 +86,20 @@ class BBlock():
 
     def write(self):
         # TODO: Implement the write method to write in a file
-        pass
+        print("Inside write")
+        #queryset = ElectionConfig.objects.all()
+        #print(dir(queryset))
+        #queryset = Voted.objects.all()
+        queryset = CandidateVote.objects.all()
+        print(queryset.values())
+        
+        #pass
 
-    def velidate(self):
+    def validate(self):
         # TODO: Implement the write method to write in a file
         pass
 
 class BChain():
-
-
 
     def __init__(self):
         # TODO: Read all the blocks
@@ -104,6 +110,7 @@ class BChain():
         # TODO: Implement add new block in a chain
         pass
 
-    def addBlock(self):
+    def validatebc(self):
         # TODO: Validate the chain
         pass
+
