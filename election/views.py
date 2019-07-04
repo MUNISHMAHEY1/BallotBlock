@@ -70,6 +70,7 @@ def electionConfiguration(request):
         locked = request.POST.get('locked')
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
+        print("\nStart time =",start_time)
 
         if locked:
             if occurring:
