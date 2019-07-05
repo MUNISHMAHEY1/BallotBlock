@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from election.models import Elector, Candidate, ElectionConfig, Position
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -100,33 +100,34 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
 #     form = ElectionConfigForm()
 #     return render(request,'electionconfig.html',{'form':form})
 
-def electionConfiguration(request):
-    form = ElectionConfigForm()
-    queryset = ElectionConfig.objects.get(id = 1)
+def electionConfiguration(request, template_name='electionconfig.html'):
+
+    if request.election_is_occurring:
+        form = electionconfigviewForm()
+        return render(request, template_name, {'form':form})
+
+    ec = None
+    # If exists at least one row in the table
+    if ElectionConfig.objects.all().count() > 0:
+        # Select all rows and get the first one.
+        ec = ElectionConfig.objects.filter()[0]
+    
     if request.POST:
-        form = ElectionConfigForm(request.POST,instance=queryset)
-        locked = request.POST.get('locked')
-        start_time = request.POST.get('start_time')
-        end_time = request.POST.get('end_time')
-        # end_time_modle = ElectionConfig.end_time
-
-        if locked:
-            if form.is_valid():
-                form.save()
-                form = ElectionConfigForm()
-                msg = 'The Configuration for upcomming election has been set. Start time of election is {td1} and End time is {td2}'.format(td1=start_time, td2= end_time)
-                messages.success(request, msg)
-                return render(request,'electionconfig.html',{'form':form})
-            else:
-                msg = 'The form filled is not valid please check if all the fields are entered properly. Specially check for the start time and end time.'
-                messages.error(request, msg)
+        form = ElectionConfigForm(request.POST, instance=ec)
+        if form.is_valid():
+            form.save()
+            msg = 'Election configuration saved'
+            messages.success(request, msg)
+            return redirect('electionconfig')
+        return render(request, template_name, {'form':form})
+    else:
+        # If exists at least one row in the table
+        if ElectionConfig.objects.all().count() > 0:
+            # Select all rows and get the first one.
+            ec = ElectionConfig.objects.filter()[0]
+            form = ElectionConfigForm(instance=ec)
         else:
-            msg = 'After filling up the configurations please check if the election is locked.'
-            messages.warning(request,msg)
-    form = ElectionConfigForm()
-    return render(request,'electionconfig.html',{'form':form})
-
-
-def electionConfigurationViewOnly(request):
-    form = electionconfigviewForm()
-    return render(request,'electionconfigview.html',{'form':form})
+            form = ElectionConfigForm()
+    
+    return render(request, template_name, {'form':form})
+    
