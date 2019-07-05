@@ -4,5 +4,7 @@ from election import views
 urlpatterns = [
     path('config_mock_election/', views.config_mock_election, name='config_mock_election'),
     path('electionconfig/',views.electionConfiguration, name='electionconfig'),
-    #path('electionconfigview/',views.electionConfigurationViewOnly, name='electionconfigview'),
+    path('candidate/',views.candidate, name='candidate'),
+    path('candidate/<int:id>/change', views.candidate_change, name='candidate_change'),
+    path('candidate/add', views.candidate_add, name='candidate_add'),
 ]

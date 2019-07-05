@@ -10,6 +10,8 @@ from django.contrib import messages
 from election.forms import VoteForm,ElectionConfigForm, electionconfigviewForm
 from election.signals import canModify
 from election.middleware import ElectionMiddleware
+from election.tables import CandidateTable
+from django_tables2.config import RequestConfig
 
 @transaction.atomic
 @staff_member_required
@@ -63,42 +65,6 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
 
     return render(request, template_name)
 
-# def electionConfiguration(request):
-#     form = ElectionConfigForm()
-#     queryset = ElectionConfig.objects.get(id = 1)
-#     if request.POST:
-#         form = ElectionConfigForm(request.POST,instance=queryset)
-#         locked = request.POST.get('locked')
-#         start_time = request.POST.get('start_time')
-#         end_time = request.POST.get('end_time')
-#
-#         if locked:
-#             if form.is_valid():
-#                 if start_time > datetime.now():
-#                     if end_time > datetime.now():
-#                         if start_time < end_time:
-#                             form.save()
-#                             form = ElectionConfigForm()
-#                             msg = 'The Configuration for upcomming election has been set. Start time of election is {td1} and End time is {td2}'.format(td1=start_time, td2= end_time)
-#                             messages.success(request, msg)
-#                             return render(request,'electionconfig.html',{'form':form})
-#                         else:
-#                             msg = 'End time {td1} cannot be less then start time {td2}.'.format(td2=start_time, td1= end_time)
-#                             messages.error(request, msg)
-#                     else:
-#                         msg = 'End time {td1} cannot be in the past.'.format(td1= end_time)
-#                         messages.error(request, msg)
-#                 else:
-#                     msg = 'Start time {td1} cannot be in the past.'.format(td1= start_time)
-#                     messages.error(request, msg)
-#             else:
-#                 msg = 'The form filled is not valid please check if all the fields are entered properly.'
-#                 messages.warning(request, msg)
-#         else:
-#             msg = 'After filling up the configurations please check if the election is locked.'
-#             messages.warning(request,msg)
-#     form = ElectionConfigForm()
-#     return render(request,'electionconfig.html',{'form':form})
 
 def electionConfiguration(request, template_name='electionconfig.html'):
 
@@ -125,3 +91,13 @@ def electionConfiguration(request, template_name='electionconfig.html'):
     
     return render(request, template_name, {'form':form})
     
+def candidate(request, template_name='candidate/candidate_list.html'):
+    candidate_table = CandidateTable(Candidate.objects.all())
+    #RequestConfig(request, paginate={'per_page': 5}).configure(candidate_table)
+    return render(request, template_name, {'candidate_table':candidate_table })
+
+def candidate_add(request, template_name='candidate/candidate_form.html'):
+    pass
+
+def candidate_change(request, id, template_name='candidate/candidate_form.html'):
+    pass
