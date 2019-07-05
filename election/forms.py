@@ -103,7 +103,23 @@ class electionconfigviewForm(forms.ModelForm):
         )
 
 
+class CandidateForm(forms.ModelForm):
+    class Meta:
+        model = Candidate
+        fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        self.readonly = kwargs.pop('readonly') or False
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_method = 'post'
+
+        #Disable all the fields when election is occurring
+        if self.readonly:
+            for field in self.fields.values():
+                field.widget.attrs['readonly'] = True
+                field.disabled = True
 
 
-#ArticleFormSet = formset_factory(MyArticleForm)
-#formset = ArticleFormSet(form_kwargs={'user': request.user})
+
+        

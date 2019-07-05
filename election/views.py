@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from election.business import ElectionBusiness
 from django.contrib import messages
-from election.forms import VoteForm,ElectionConfigForm, electionconfigviewForm
+from election.forms import VoteForm,ElectionConfigForm, electionconfigviewForm, CandidateForm
 from election.signals import canModify
 from election.middleware import ElectionMiddleware
 from election.tables import CandidateTable
@@ -65,7 +65,8 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
 
     return render(request, template_name)
 
-
+# Only staff members can access the election configuration
+@staff_member_required
 def electionConfiguration(request, template_name='electionconfig.html'):
 
     if request.election_is_occurring:
@@ -90,14 +91,64 @@ def electionConfiguration(request, template_name='electionconfig.html'):
         form = ElectionConfigForm(instance=ec)
     
     return render(request, template_name, {'form':form})
-    
+
+@staff_member_required    
 def candidate(request, template_name='candidate/candidate_list.html'):
     candidate_table = CandidateTable(Candidate.objects.all())
-    #RequestConfig(request, paginate={'per_page': 5}).configure(candidate_table)
+    # Exclude delete column if election is occurring
+    if request.election_is_occurring:
+        candidate_table.exclude = ('delete') 
     return render(request, template_name, {'candidate_table':candidate_table })
 
-def candidate_add(request, template_name='candidate/candidate_form.html'):
-    pass
+@staff_member_required
+def candidate_delete(request, id):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Delete candidates is not allowed.'
+        messages.error(request, msg)
+        return redirect('candidate')
+    
+    try:
+        Candidate.objects.get(id=int(id)).delete()
+    except Exception as e:
+        s = str(e)
+        messages.error(request, e)
 
+    return redirect('candidate')
+
+@staff_member_required
+def candidate_add(request, template_name='candidate/candidate_form.html'):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Candidate modifications are not allowed.'
+        messages.warning(request, msg)
+        return redirect('candidate')
+
+    if request.POST:
+        form = CandidateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('candidate')
+        else:
+            return render(request, template_name, {'form':form})
+    else:
+        form = CandidateForm()
+    return render(request, template_name, {'form':form})
+
+@staff_member_required
 def candidate_change(request, id, template_name='candidate/candidate_form.html'):
-    pass
+    candidate = Candidate.objects.get(id=int(id))
+    if request.POST:
+        if request.election_is_occurring:
+            msg = 'Election is occurring. Candidate modifications are not allowed.'
+            messages.error(request, msg)
+            return redirect('candidate')
+
+        form = CandidateForm(request.POST, instance=candidate, readonly=request.election_is_occurring)
+        if form.is_valid():
+            form.save()
+            return redirect('candidate')
+        else:
+            return render(request, template_name, {'form':form})
+    else:
+        # If election is occurring, the form will be readonly
+        form = CandidateForm(instance=candidate, readonly=request.election_is_occurring)
+    return render(request, template_name, {'form':form})

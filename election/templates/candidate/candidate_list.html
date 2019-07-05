@@ -4,11 +4,11 @@
 
 
 {% block extrahead %}
-<script>
-$(document).ready(function() {
-    $('#candidate_table').DataTable();
-} );
-</script>
+    <script>
+        $(document).ready(function() {
+            $('#candidate_table').DataTable();
+        });
+    </script>
 {% endblock extrahead %}
 
 {% block content %}
@@ -19,13 +19,14 @@ $(document).ready(function() {
         </ol>
     </nav>
 
-{% render_table candidate_table %}
+    {% render_table candidate_table %}
 
-<div class="row">
-    <div class="col-md-2">
-        <a class="btn btn-primary"  href="{% url 'candidate_add' %}">Add</a>
+    {% if not election_is_occurring %}
+    <div class="row">
+        <div class="col-md-2">
+            <a class="btn btn-primary"  href="{% url 'candidate_add' %}">Add</a>
+        </div>
     </div>
-</div>
-
+    {% endif %}
 
 {% endblock content %}
