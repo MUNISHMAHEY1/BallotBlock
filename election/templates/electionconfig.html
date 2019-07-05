@@ -15,16 +15,41 @@
 
 {% endblock messages %}
 
+{% block extrahead %}
+    {{ block.super }}
+    <script>
+        $( document ).ready(function() {
+            $('#id_start_time').datetimepicker({
+                format:'Y-m-d H:i',
+            });
+        });
+        $( document ).ready(function() {
+            $('#id_end_time').datetimepicker({
+                format:'Y-m-d H:i',
+            });
+        });
+    </script>
+
+{% endblock %}
+
 
 {% block content %}
-<form method="post" action="{{ request.path }}">
-<h1>Election configurations</h1>
-    {% crispy form %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+          <li class="breadcrumb-item">Election</li>
+          <li class="breadcrumb-item active" aria-current="page">Election Configuration</li>
+        </ol>
+    </nav>
 
-    {% if not election_is_occurring %}
-        <input type="submit" class="btn btn-primary" value="Save">
-    {% endif %}
 
-</form>
+    <form method="post" action="{{ request.path }}">
+        {% crispy form %}
+
+        {% if not election_is_occurring %}
+            <input type="submit" class="btn btn-primary" value="Save">
+        {% endif %}
+
+    </form>
 
 {% endblock content %}

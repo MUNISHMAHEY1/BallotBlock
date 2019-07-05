@@ -7,6 +7,15 @@
 {% endblock%}
 
 {% block content %}
+
+	<nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+          <li class="breadcrumb-item">Election</li>
+          <li class="breadcrumb-item active" aria-current="page">Results</li>
+        </ol>
+    </nav>
+
 	<div class="row">
 	{% for position in positions %}
 			<div class="col-md-6">
