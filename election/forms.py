@@ -44,11 +44,23 @@ class ElectionConfigForm(forms.ModelForm):
             ),
 
         )
-        #
-        # def clean(self):
-        #     cleaned_data = super().clean() # individual field's clean methods have already been called
-        #     start_time = cleaned_data.get("start_time")
-        #     end_time = cleaned_data.get("end_time")
+        
+    '''
+    def clean(self):
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get("start_time")
+        end_time = cleaned_data.get("end_time")
+        if start_time < datetime.datetime.now():
+            raise forms.ValidationError("Check if the start time is set properly.")
+    '''
+    
+    def clean_start_time(self):
+        start_time = self.cleaned_data['start_time']
+        if start_time < datetime.datetime.now():
+            raise forms.ValidationError("Check if the start time is set properly.")
+        
+        return start_time
+
         #     if start_time < datetime.now():
         #         if end_time < datetime.now():
         #             if start_time > end_time:

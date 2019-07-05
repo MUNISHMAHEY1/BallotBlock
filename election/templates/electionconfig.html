@@ -21,7 +21,9 @@
 <h1>Election configurations</h1>
     {% crispy form %}
 
-    <input type="submit" class="btn btn-primary" value="Save">
+    {% if not election_is_occurring %}
+        <input type="submit" class="btn btn-primary" value="Save">
+    {% endif %}
 
 </form>
 

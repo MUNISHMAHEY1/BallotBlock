@@ -121,13 +121,7 @@ def electionConfiguration(request, template_name='electionconfig.html'):
             return redirect('electionconfig')
         return render(request, template_name, {'form':form})
     else:
-        # If exists at least one row in the table
-        if ElectionConfig.objects.all().count() > 0:
-            # Select all rows and get the first one.
-            ec = ElectionConfig.objects.filter()[0]
-            form = ElectionConfigForm(instance=ec)
-        else:
-            form = ElectionConfigForm()
+        form = ElectionConfigForm(instance=ec)
     
     return render(request, template_name, {'form':form})
     
