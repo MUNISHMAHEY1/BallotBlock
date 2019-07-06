@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from election.business import ElectionBusiness
 from django.contrib import messages
-from election.forms import VoteForm,ElectionConfigForm, electionconfigviewForm, CandidateForm
+from election.forms import VoteForm,ElectionConfigForm, electionconfigviewForm, CandidateForm, PositionForm
 from election.signals import canModify
 from election.middleware import ElectionMiddleware
 from election.tables import CandidateTable, PositionTable
