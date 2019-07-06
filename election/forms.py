@@ -40,32 +40,40 @@ class ElectionConfigForm(forms.ModelForm):
                 #css_class='form-row'
             ),
         )
-        
-    '''
-    def clean(self):
-        cleaned_data = super().clean()
-        start_time = cleaned_data.get("start_time")
-        end_time = cleaned_data.get("end_time")
-        if start_time < datetime.datetime.now():
-            raise forms.ValidationError("Check if the start time is set properly.")
-    '''
-    
+
+    # def clean(self):
+    #     data = self.cleaned_data
+    #     print(data)
+    #     start_time = data.get('start_time')
+    #     end_time = data.get('end_time')
+    #     if end_time < start_time:
+    #         raise forms.ValidationError(
+    #         "Please check to see the start and end dates are set properly")
+    #     return data
+
+        def clean_start_time_again(self):
+            start_time = self.cleaned_data['start_time']
+            end_time = self.cleaned_data['end_time']
+            if start_time > end_time:
+                raise forms.ValidationError("Check if the start time is set properly.")
+                return start_time
+            else:
+                raise forms.ValidationError("Check if the start time is set properly.")
+                return end_time
+
     def clean_start_time(self):
+        #cleaned_data = super().clean()
         start_time = self.cleaned_data['start_time']
         if start_time < datetime.datetime.now():
             raise forms.ValidationError("Check if the start time is set properly.")
-        
         return start_time
 
-        #     if start_time < datetime.now():
-        #         if end_time < datetime.now():
-        #             if start_time > end_time:
-        #                 msg='End time cannot end before the start time'
-        #                 self.add_error('start_time', msg)
-        #         msg ='End time cannot be in the past'
-        #         self.add_error('end_time', msg)
-        #     msg="Start time cannot be in the past."
-        #     self.add_error('start_time',msg)
+    def clean_end_time(self):
+        #cleaned_data = super().clean()
+        end_time = self.cleaned_data['end_time']
+        if end_time < datetime.datetime.now():
+            raise forms.ValidationError("Check if the end time is set properly.")
+        return end_time
 
 
 class electionconfigviewForm(forms.ModelForm):
@@ -119,7 +127,3 @@ class CandidateForm(forms.ModelForm):
             for field in self.fields.values():
                 field.widget.attrs['readonly'] = True
                 field.disabled = True
-
-
-
-        
