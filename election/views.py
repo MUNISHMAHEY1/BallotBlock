@@ -10,7 +10,7 @@ from django.contrib import messages
 from election.forms import VoteForm,ElectionConfigForm, electionconfigviewForm, CandidateForm
 from election.signals import canModify
 from election.middleware import ElectionMiddleware
-from election.tables import CandidateTable
+from election.tables import CandidateTable, PositionTable
 from django_tables2.config import RequestConfig
 
 @transaction.atomic
@@ -78,7 +78,7 @@ def electionConfiguration(request, template_name='electionconfig.html'):
     if ElectionConfig.objects.all().count() > 0:
         # Select all rows and get the first one.
         ec = ElectionConfig.objects.filter()[0]
-    
+
     if request.POST:
         form = ElectionConfigForm(request.POST, instance=ec)
         if form.is_valid():
@@ -89,15 +89,15 @@ def electionConfiguration(request, template_name='electionconfig.html'):
         return render(request, template_name, {'form':form})
     else:
         form = ElectionConfigForm(instance=ec)
-    
+
     return render(request, template_name, {'form':form})
 
-@staff_member_required    
+@staff_member_required
 def candidate(request, template_name='candidate/candidate_list.html'):
     candidate_table = CandidateTable(Candidate.objects.all())
     # Exclude delete column if election is occurring
     if request.election_is_occurring:
-        candidate_table.exclude = ('delete') 
+        candidate_table.exclude = ('delete')
     return render(request, template_name, {'candidate_table':candidate_table })
 
 @staff_member_required
@@ -106,7 +106,7 @@ def candidate_delete(request, id):
         msg = 'Election is occurring. Delete candidates is not allowed.'
         messages.error(request, msg)
         return redirect('candidate')
-    
+
     try:
         Candidate.objects.get(id=int(id)).delete()
     except Exception as e:
@@ -151,4 +151,65 @@ def candidate_change(request, id, template_name='candidate/candidate_form.html')
     else:
         # If election is occurring, the form will be readonly
         form = CandidateForm(instance=candidate, readonly=request.election_is_occurring)
+    return render(request, template_name, {'form':form})
+
+@staff_member_required
+def position(request, template_name='position/position_list.html'):
+    position_table = PositionTable(Position.objects.all())
+    # Exclude delete column if election is occurring
+    if request.election_is_occurring:
+        position_table.exclude = ('delete')
+    return render(request, template_name, {'position_table':position_table })
+
+@staff_member_required
+def position_delete(request, id):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Delete position is not allowed.'
+        messages.error(request, msg)
+        return redirect('position')
+
+    try:
+        Position.objects.get(id=int(id)).delete()
+    except Exception as e:
+        s = str(e)
+        messages.error(request, e)
+
+    return redirect('position')
+
+@staff_member_required
+def position_add(request, template_name='position/position_form.html'):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Position modifications are not allowed.'
+        messages.warning(request, msg)
+        return redirect('position')
+
+    if request.POST:
+        form = PositionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('position')
+        else:
+            return render(request, template_name, {'form':form})
+    else:
+        form = PositionForm()
+    return render(request, template_name, {'form':form})
+
+@staff_member_required
+def position_change(request, id, template_name='position/position_form.html'):
+    position = Position.objects.get(id=int(id))
+    if request.POST:
+        if request.election_is_occurring:
+            msg = 'Election is occurring. Position modifications are not allowed.'
+            messages.error(request, msg)
+            return redirect('position')
+
+        form = PositionForm(request.POST, instance=position, readonly=request.election_is_occurring)
+        if form.is_valid():
+            form.save()
+            return redirect('position')
+        else:
+            return render(request, template_name, {'form':form})
+    else:
+        # If election is occurring, the form will be readonly
+        form = PositionForm(instance=position, readonly=request.election_is_occurring)
     return render(request, template_name, {'form':form})

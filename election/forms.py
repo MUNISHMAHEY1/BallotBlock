@@ -3,7 +3,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset,Row, \
     Column, ButtonHolder, Submit,Button
 from django.forms.models import inlineformset_factory
-from election.models import Candidate, ElectionConfig
+from election.models import Candidate, ElectionConfig, Position
 import datetime
 
 class VoteForm(forms.Form):
@@ -41,15 +41,6 @@ class ElectionConfigForm(forms.ModelForm):
             ),
         )
 
-    # def clean(self):
-    #     data = self.cleaned_data
-    #     print(data)
-    #     start_time = data.get('start_time')
-    #     end_time = data.get('end_time')
-    #     if end_time < start_time:
-    #         raise forms.ValidationError(
-    #         "Please check to see the start and end dates are set properly")
-    #     return data
 
         def clean_start_time_again(self):
             start_time = self.cleaned_data['start_time']
@@ -114,6 +105,23 @@ class electionconfigviewForm(forms.ModelForm):
 class CandidateForm(forms.ModelForm):
     class Meta:
         model = Candidate
+        fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        self.readonly = kwargs.pop('readonly') or False
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_method = 'post'
+
+        #Disable all the fields when election is occurring
+        if self.readonly:
+            for field in self.fields.values():
+                field.widget.attrs['readonly'] = True
+                field.disabled = True
+
+class PositionForm(forms.ModelForm):
+    class Meta:
+        model = Position
         fields = '__all__'
     def __init__(self, *args, **kwargs):
         self.readonly = kwargs.pop('readonly') or False
