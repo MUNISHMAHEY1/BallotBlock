@@ -107,7 +107,9 @@ class CandidateForm(forms.ModelForm):
         model = Candidate
         fields = '__all__'
     def __init__(self, *args, **kwargs):
-        self.readonly = kwargs.pop('readonly') or False
+        self.readonly = False
+        if 'readonly' in kwargs:
+            self.readonly = kwargs.pop('readonly')
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -124,7 +126,9 @@ class PositionForm(forms.ModelForm):
         model = Position
         fields = '__all__'
     def __init__(self, *args, **kwargs):
-        self.readonly = kwargs.pop('readonly') or False
+        self.readonly = False
+        if 'readonly' in kwargs:
+            self.readonly = kwargs.pop('readonly')
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
