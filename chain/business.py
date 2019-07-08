@@ -85,6 +85,73 @@ class BBlock():
         self.source_code = source_code
         self.database = database
 
+    def getDatabaseHash(self):
+        #TODO: Returns a dictionary with the information of database
+        #return self.database
+
+    def getSourceCodeHash(self):
+        #TODO: Returns a dictionary with the information of database
+        #return self.source_code
+
+    def getElectors(self):
+        #TODO: Returns a list with electors in this block which already voted
+        return self.electors
+
+    def getCandidateVotes(self):
+        #TODO: Retunrs a dictionary with Candidates and votes received
+        return self.candidate_votes
+
+    def getHash(self):
+        #TODO: Calculates the hash of the block based on information inside the block.
+        #This function
+    
+    def getPreviousHash(self):
+        #TODO: Retunrs self.previous_hash
+
+    def getBlockDateTimeGeneration(self):
+        #TODO: Returns a timestamp of the block generation.
+        #This information should be added in the block also.
+
+    def read(self, block_number):
+        #TODO: Read json of file and load information to instance variables.
+        #Read file
+        #Load database_hash
+        #Load source_code_hash
+        #Load Electors
+        #Load Votes
+    
+    def retrieve(self):
+        #TODO: Read information from database
+        hc = HashCalculator()
+        self.database_hash = hc.databaseHash
+        self.source_code = hc.databaseHash
+        self.candidate_votes = CandidateVote.objects.filter().values()
+        self.electors = Voted.objects.filter(hash_val=None).values()
+        '''
+        .
+        .
+        .
+        '''
+           
+
+    '''
+    def write(self):
+        #TODO: Just as a good practice, try to refactor the write function.
+        It should be simple like:
+        self.retrieve()
+        content_list = []
+        content_list.append(self.getDatabaseHash())
+        content_list.append(self.getSourceCodeHash())
+        .
+        .
+        .
+        content_list.append(self.getPreviousHash())
+        json_content = json.dumps(content_list)
+        with open(file):
+            file.write(json_content)
+    '''
+    
+
     def write(self):
         # TODO: Implement the write method to write in a file
         print("Inside write")
@@ -281,4 +348,8 @@ class BChain():
     def validatebc(self):
         # TODO: Validate the chain
         pass
+
+    def read(self):
+        # TODO: Read all the files and populate the cain
+
 
