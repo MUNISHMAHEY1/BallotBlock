@@ -3,7 +3,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset,Row, \
     Column, ButtonHolder, Submit,Button
 from django.forms.models import inlineformset_factory
-from election.models import Candidate, ElectionConfig, Position
+from election.models import Candidate, ElectionConfig, Position, Elector
 import datetime
 
 class VoteForm(forms.Form):
@@ -124,6 +124,26 @@ class CandidateForm(forms.ModelForm):
 class PositionForm(forms.ModelForm):
     class Meta:
         model = Position
+        fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        self.readonly = False
+        if 'readonly' in kwargs:
+            self.readonly = kwargs.pop('readonly')
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_method = 'post'
+
+        #Disable all the fields when election is occurring
+        if self.readonly:
+            for field in self.fields.values():
+                field.widget.attrs['readonly'] = True
+                field.disabled = True
+
+
+class ElectorForm(forms.ModelForm):
+    class Meta:
+        model = Elector
         fields = '__all__'
     def __init__(self, *args, **kwargs):
         self.readonly = False

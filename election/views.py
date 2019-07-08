@@ -7,10 +7,10 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from election.business import ElectionBusiness
 from django.contrib import messages
-from election.forms import VoteForm,ElectionConfigForm, electionconfigviewForm, CandidateForm, PositionForm
+from election.forms import VoteForm,ElectionConfigForm, electionconfigviewForm, CandidateForm, PositionForm, ElectorForm
 from election.signals import canModify
 from election.middleware import ElectionMiddleware
-from election.tables import CandidateTable, PositionTable
+from election.tables import CandidateTable, PositionTable, ElectorTable
 from django_tables2.config import RequestConfig
 
 @transaction.atomic
@@ -212,4 +212,68 @@ def position_change(request, id, template_name='position/position_form.html'):
     else:
         # If election is occurring, the form will be readonly
         form = PositionForm(instance=position, readonly=request.election_is_occurring)
+    return render(request, template_name, {'form':form})
+
+
+
+
+@staff_member_required
+def elector(request, template_name='elector/elector_list.html'):
+    elector_table = ElectorTable(Elector.objects.all())
+    # Exclude delete column if election is occurring
+    if request.election_is_occurring:
+        elector_table.exclude = ('delete')
+    return render(request, template_name, {'elector_table':elector_table })
+
+@staff_member_required
+def elector_delete(request, id):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Delete electors is not allowed.'
+        messages.error(request, msg)
+        return redirect('elector')
+
+    try:
+        Elector.objects.get(id=int(id)).delete()
+    except Exception as e:
+        s = str(e)
+        messages.error(request, e)
+
+    return redirect('elector')
+
+@staff_member_required
+def elector_add(request, template_name='elector/elector_form.html'):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Elector modifications are not allowed.'
+        messages.warning(request, msg)
+        return redirect('elector')
+
+    if request.POST:
+        form = ElectorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('elector')
+        else:
+            return render(request, template_name, {'form':form})
+    else:
+        form = ElectorForm()
+    return render(request, template_name, {'form':form})
+
+@staff_member_required
+def elector_change(request, id, template_name='elector/elector_form.html'):
+    elector = Elector.objects.get(id=int(id))
+    if request.POST:
+        if request.election_is_occurring:
+            msg = 'Election is occurring. Elector modifications are not allowed.'
+            messages.error(request, msg)
+            return redirect('elector')
+
+        form = ElectorForm(request.POST, instance=elector, readonly=request.election_is_occurring)
+        if form.is_valid():
+            form.save()
+            return redirect('elector')
+        else:
+            return render(request, template_name, {'form':form})
+    else:
+        # If election is occurring, the form will be readonly
+        form = ElectorForm(instance=elector, readonly=request.election_is_occurring)
     return render(request, template_name, {'form':form})
