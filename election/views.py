@@ -80,26 +80,6 @@ def electionConfiguration(request, template_name='electionconfig.html'):
         ec = ElectionConfig.objects.filter()[0]
 
     if request.POST:
-<<<<<<< HEAD
-        form = ElectionConfigForm(request.POST,instance=queryset)
-        locked = request.POST.get('locked')
-        start_time = request.POST.get('start_time')
-        end_time = request.POST.get('end_time')
-
-        print("\nStart time =",start_time)
-        # end_time_modle = ElectionConfig.end_time
-
-        if locked:
-            if form.is_valid():
-                form.save()
-                form = ElectionConfigForm()
-                msg = 'The Configuration for upcomming election has been set. Start time of election is {td1} and End time is {td2}'.format(td1=start_time, td2= end_time)
-                messages.success(request, msg)
-                return render(request,'electionconfig.html',{'form':form})
-            else:
-                msg = 'The form filled is not valid please check if all the fields are entered properly. Specially check for the start time and end time.'
-                messages.error(request, msg)
-=======
         form = ElectionConfigForm(request.POST, instance=ec)
         if form.is_valid():
             form.save()
@@ -147,7 +127,6 @@ def candidate_add(request, template_name='candidate/candidate_form.html'):
         if form.is_valid():
             form.save()
             return redirect('candidate')
->>>>>>> cfcfbf7709e3a0f85ef63da49df20ff8c826fc3d
         else:
             return render(request, template_name, {'form':form})
     else:
