@@ -18,15 +18,36 @@
 {% block extrahead %}
     {{ block.super }}
     <script>
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
+
         $( document ).ready(function() {
             $('#id_start_time').datetimepicker({
                 format:'Y-m-d H:i',
             });
-        });
-        $( document ).ready(function() {
             $('#id_end_time').datetimepicker({
                 format:'Y-m-d H:i',
             });
+            if (!$('#id_start_time').val()) {
+                var now = new Date();
+                now.setDate(now.getDate() + 1);
+                $('#id_start_time').val(now.toISOString().substring(0,10) + ' 00:00');
+            }
+            if (!$('#id_end_time').val()) {
+                var tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 2);
+                $('#id_end_time').val(tomorrow.toISOString().substring(0,10) + ' 00:00');
+            }
+
         });
     </script>
 
