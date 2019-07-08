@@ -108,11 +108,9 @@ def electionConfiguration(request):
         locked = request.POST.get('locked')
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
-<<<<<<< HEAD
+
         print("\nStart time =",start_time)
-=======
         # end_time_modle = ElectionConfig.end_time
->>>>>>> 33ecf68d8aa0243791ab3a161304ffbe2b813ca2
 
         if locked:
             if form.is_valid():
