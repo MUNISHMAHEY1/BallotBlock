@@ -3,7 +3,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset,Row, \
     Column, ButtonHolder, Submit,Button
 from django.forms.models import inlineformset_factory
-from election.models import Candidate, ElectionConfig
+from election.models import Candidate, ElectionConfig, Position, Elector
 import datetime
 
 class VoteForm(forms.Form):
@@ -27,37 +27,44 @@ class ElectionConfigForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
-            Fieldset(
-                'Configuration Data',
-                Row(
-                    Column('description', css_class='form-group col-md-4 mb-0'),
-                    Column('start_time', css_class='form-group col-md-4 mb-0'),
-                    Column('end_time', css_class='form-group col-md-4 mb-0'),
-                    Column('block_time_generation', css_class='form-group col-md-4 mb-0'),
-                    Column('guess_rate', css_class='form-group col-md-4 mb-0'),
-                    Column('min_votes_in_block', css_class='form-group col-md-4 mb-0'),
-                    Column('min_votes_in_last_block', css_class='form-group col-md-4 mb-0'),
-                    Column('attendance_rate', css_class='form-group col-md-4 mb-0'),
-                    Column('locked', css_class='form-group col-md-4 mb-0'),
-                    #css_class='form-row'
-                ),
+            Row(
+                Column('description', css_class='form-group col-md-4 mb-0'),
+                Column('start_time', css_class='form-group col-md-4 mb-0'),
+                Column('end_time', css_class='form-group col-md-4 mb-0'),
+                Column('block_time_generation', css_class='form-group col-md-4 mb-0'),
+                Column('guess_rate', css_class='form-group col-md-4 mb-0'),
+                Column('min_votes_in_block', css_class='form-group col-md-4 mb-0'),
+                Column('min_votes_in_last_block', css_class='form-group col-md-4 mb-0'),
+                Column('attendance_rate', css_class='form-group col-md-4 mb-0'),
+                Column('locked', css_class='form-group col-md-4 mb-0'),
+                #css_class='form-row'
             ),
-
         )
-        #
-        # def clean(self):
-        #     cleaned_data = super().clean() # individual field's clean methods have already been called
-        #     start_time = cleaned_data.get("start_time")
-        #     end_time = cleaned_data.get("end_time")
-        #     if start_time < datetime.now():
-        #         if end_time < datetime.now():
-        #             if start_time > end_time:
-        #                 msg='End time cannot end before the start time'
-        #                 self.add_error('start_time', msg)
-        #         msg ='End time cannot be in the past'
-        #         self.add_error('end_time', msg)
-        #     msg="Start time cannot be in the past."
-        #     self.add_error('start_time',msg)
+
+
+        def clean_start_time_again(self):
+            start_time = self.cleaned_data['start_time']
+            end_time = self.cleaned_data['end_time']
+            if start_time > end_time:
+                raise forms.ValidationError("Check if the start time is set properly.")
+                return start_time
+            else:
+                raise forms.ValidationError("Check if the start time is set properly.")
+                return end_time
+
+    def clean_start_time(self):
+        #cleaned_data = super().clean()
+        start_time = self.cleaned_data['start_time']
+        if start_time < datetime.datetime.now():
+            raise forms.ValidationError("Check if the start time is set properly.")
+        return start_time
+
+    def clean_end_time(self):
+        #cleaned_data = super().clean()
+        end_time = self.cleaned_data['end_time']
+        if end_time < datetime.datetime.now():
+            raise forms.ValidationError("Check if the end time is set properly.")
+        return end_time
 
 
 class electionconfigviewForm(forms.ModelForm):
@@ -82,25 +89,73 @@ class electionconfigviewForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
-            Fieldset(
-                'Configuration Data',
-                Row(
-                    Column('description', css_class='form-group col-md-4 mb-0'),
-                    Column('start_time', css_class='form-group col-md-4 mb-0'),
-                    Column('end_time', css_class='form-group col-md-4 mb-0'),
-                    Column('block_time_generation', css_class='form-group col-md-4 mb-0'),
-                    Column('guess_rate', css_class='form-group col-md-4 mb-0'),
-                    Column('min_votes_in_block', css_class='form-group col-md-4 mb-0'),
-                    Column('min_votes_in_last_block', css_class='form-group col-md-4 mb-0'),
-                    Column('attendance_rate', css_class='form-group col-md-4 mb-0'),
-
-                ),
+            Row(
+                Column('description', css_class='form-group col-md-4 mb-0'),
+                Column('start_time', css_class='form-group col-md-4 mb-0'),
+                Column('end_time', css_class='form-group col-md-4 mb-0'),
+                Column('block_time_generation', css_class='form-group col-md-4 mb-0'),
+                Column('guess_rate', css_class='form-group col-md-4 mb-0'),
+                Column('min_votes_in_block', css_class='form-group col-md-4 mb-0'),
+                Column('min_votes_in_last_block', css_class='form-group col-md-4 mb-0'),
+                Column('attendance_rate', css_class='form-group col-md-4 mb-0'),
             ),
-
         )
 
 
+class CandidateForm(forms.ModelForm):
+    class Meta:
+        model = Candidate
+        fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        self.readonly = False
+        if 'readonly' in kwargs:
+            self.readonly = kwargs.pop('readonly')
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_method = 'post'
+
+        #Disable all the fields when election is occurring
+        if self.readonly:
+            for field in self.fields.values():
+                field.widget.attrs['readonly'] = True
+                field.disabled = True
+
+class PositionForm(forms.ModelForm):
+    class Meta:
+        model = Position
+        fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        self.readonly = False
+        if 'readonly' in kwargs:
+            self.readonly = kwargs.pop('readonly')
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_method = 'post'
+
+        #Disable all the fields when election is occurring
+        if self.readonly:
+            for field in self.fields.values():
+                field.widget.attrs['readonly'] = True
+                field.disabled = True
 
 
-#ArticleFormSet = formset_factory(MyArticleForm)
-#formset = ArticleFormSet(form_kwargs={'user': request.user})
+class ElectorForm(forms.ModelForm):
+    class Meta:
+        model = Elector
+        fields = '__all__'
+    def __init__(self, *args, **kwargs):
+        self.readonly = False
+        if 'readonly' in kwargs:
+            self.readonly = kwargs.pop('readonly')
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.form_method = 'post'
+
+        #Disable all the fields when election is occurring
+        if self.readonly:
+            for field in self.fields.values():
+                field.widget.attrs['readonly'] = True
+                field.disabled = True

@@ -17,8 +17,8 @@ def present_or_future_date_endtime(end_time):
 
 class ElectionConfig(models.Model):
     description = models.CharField(max_length=100, null=False, blank=False, default='Generic Election')
-    start_time = models.DateTimeField(null=False, blank=False, default=datetime.now(), validators=[present_or_future_date_starttime])
-    end_time = models.DateTimeField(null=False, blank=False,default=datetime.now(), validators=[present_or_future_date_endtime])
+    start_time = models.DateTimeField(null=False, blank=False, default=datetime.now())
+    end_time = models.DateTimeField(null=False, blank=False,default=datetime.now())
     block_time_generation = models.IntegerField(default=15)
     guess_rate = models.DecimalField(null=False, blank=False, max_digits=5,decimal_places=4, validators=[MinValueValidator(Decimal('0.0001')), MaxValueValidator(Decimal('0.9999'))], default=Decimal('0.3'))
     min_votes_in_block = models.IntegerField(null=False, blank=False, default=50)

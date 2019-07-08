@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block content %}
-<h1>Car Delete</h1>
-<form method="post">{% csrf_token %}
-    Are you sure you want to delete "{{ object }}" ?
-    <input type="submit" class="btn btn-primary" value="Submit" />
-</form>
-{% endblock content %}

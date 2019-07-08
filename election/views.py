@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from election.models import Elector, Candidate, ElectionConfig, Position
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -7,9 +7,11 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from election.business import ElectionBusiness
 from django.contrib import messages
-from election.forms import VoteForm,ElectionConfigForm, electionconfigviewForm
+from election.forms import VoteForm,ElectionConfigForm, electionconfigviewForm, CandidateForm, PositionForm, ElectorForm
 from election.signals import canModify
 from election.middleware import ElectionMiddleware
+from election.tables import CandidateTable, PositionTable, ElectorTable
+from django_tables2.config import RequestConfig
 
 @transaction.atomic
 @staff_member_required
@@ -63,47 +65,22 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
 
     return render(request, template_name)
 
-# def electionConfiguration(request):
-#     form = ElectionConfigForm()
-#     queryset = ElectionConfig.objects.get(id = 1)
-#     if request.POST:
-#         form = ElectionConfigForm(request.POST,instance=queryset)
-#         locked = request.POST.get('locked')
-#         start_time = request.POST.get('start_time')
-#         end_time = request.POST.get('end_time')
-#
-#         if locked:
-#             if form.is_valid():
-#                 if start_time > datetime.now():
-#                     if end_time > datetime.now():
-#                         if start_time < end_time:
-#                             form.save()
-#                             form = ElectionConfigForm()
-#                             msg = 'The Configuration for upcomming election has been set. Start time of election is {td1} and End time is {td2}'.format(td1=start_time, td2= end_time)
-#                             messages.success(request, msg)
-#                             return render(request,'electionconfig.html',{'form':form})
-#                         else:
-#                             msg = 'End time {td1} cannot be less then start time {td2}.'.format(td2=start_time, td1= end_time)
-#                             messages.error(request, msg)
-#                     else:
-#                         msg = 'End time {td1} cannot be in the past.'.format(td1= end_time)
-#                         messages.error(request, msg)
-#                 else:
-#                     msg = 'Start time {td1} cannot be in the past.'.format(td1= start_time)
-#                     messages.error(request, msg)
-#             else:
-#                 msg = 'The form filled is not valid please check if all the fields are entered properly.'
-#                 messages.warning(request, msg)
-#         else:
-#             msg = 'After filling up the configurations please check if the election is locked.'
-#             messages.warning(request,msg)
-#     form = ElectionConfigForm()
-#     return render(request,'electionconfig.html',{'form':form})
+# Only staff members can access the election configuration
+@staff_member_required
+def electionConfiguration(request, template_name='electionconfig.html'):
 
-def electionConfiguration(request):
-    form = ElectionConfigForm()
-    queryset = ElectionConfig.objects.get(id = 1)
+    if request.election_is_occurring:
+        form = electionconfigviewForm()
+        return render(request, template_name, {'form':form})
+
+    ec = None
+    # If exists at least one row in the table
+    if ElectionConfig.objects.all().count() > 0:
+        # Select all rows and get the first one.
+        ec = ElectionConfig.objects.filter()[0]
+
     if request.POST:
+<<<<<<< HEAD
         form = ElectionConfigForm(request.POST,instance=queryset)
         locked = request.POST.get('locked')
         start_time = request.POST.get('start_time')
@@ -122,13 +99,202 @@ def electionConfiguration(request):
             else:
                 msg = 'The form filled is not valid please check if all the fields are entered properly. Specially check for the start time and end time.'
                 messages.error(request, msg)
+=======
+        form = ElectionConfigForm(request.POST, instance=ec)
+        if form.is_valid():
+            form.save()
+            msg = 'Election configuration saved'
+            messages.success(request, msg)
+            return redirect('electionconfig')
+        return render(request, template_name, {'form':form})
+    else:
+        form = ElectionConfigForm(instance=ec)
+
+    return render(request, template_name, {'form':form})
+
+@staff_member_required
+def candidate(request, template_name='candidate/candidate_list.html'):
+    candidate_table = CandidateTable(Candidate.objects.all())
+    # Exclude delete column if election is occurring
+    if request.election_is_occurring:
+        candidate_table.exclude = ('delete')
+    return render(request, template_name, {'candidate_table':candidate_table })
+
+@staff_member_required
+def candidate_delete(request, id):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Delete candidates is not allowed.'
+        messages.error(request, msg)
+        return redirect('candidate')
+
+    try:
+        Candidate.objects.get(id=int(id)).delete()
+    except Exception as e:
+        s = str(e)
+        messages.error(request, e)
+
+    return redirect('candidate')
+
+@staff_member_required
+def candidate_add(request, template_name='candidate/candidate_form.html'):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Candidate modifications are not allowed.'
+        messages.warning(request, msg)
+        return redirect('candidate')
+
+    if request.POST:
+        form = CandidateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('candidate')
+>>>>>>> cfcfbf7709e3a0f85ef63da49df20ff8c826fc3d
         else:
-            msg = 'After filling up the configurations please check if the election is locked.'
-            messages.warning(request,msg)
-    form = ElectionConfigForm()
-    return render(request,'electionconfig.html',{'form':form})
+            return render(request, template_name, {'form':form})
+    else:
+        form = CandidateForm()
+    return render(request, template_name, {'form':form})
+
+@staff_member_required
+def candidate_change(request, id, template_name='candidate/candidate_form.html'):
+    candidate = Candidate.objects.get(id=int(id))
+    if request.POST:
+        if request.election_is_occurring:
+            msg = 'Election is occurring. Candidate modifications are not allowed.'
+            messages.error(request, msg)
+            return redirect('candidate')
+
+        form = CandidateForm(request.POST, instance=candidate, readonly=request.election_is_occurring)
+        if form.is_valid():
+            form.save()
+            return redirect('candidate')
+        else:
+            return render(request, template_name, {'form':form})
+    else:
+        # If election is occurring, the form will be readonly
+        form = CandidateForm(instance=candidate, readonly=request.election_is_occurring)
+    return render(request, template_name, {'form':form})
+
+@staff_member_required
+def position(request, template_name='position/position_list.html'):
+    position_table = PositionTable(Position.objects.all())
+    # Exclude delete column if election is occurring
+    if request.election_is_occurring:
+        position_table.exclude = ('delete')
+    return render(request, template_name, {'position_table':position_table })
+
+@staff_member_required
+def position_delete(request, id):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Delete position is not allowed.'
+        messages.error(request, msg)
+        return redirect('position')
+
+    try:
+        Position.objects.get(id=int(id)).delete()
+    except Exception as e:
+        s = str(e)
+        messages.error(request, e)
+
+    return redirect('position')
+
+@staff_member_required
+def position_add(request, template_name='position/position_form.html'):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Position modifications are not allowed.'
+        messages.warning(request, msg)
+        return redirect('position')
+
+    if request.POST:
+        form = PositionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('position')
+        else:
+            return render(request, template_name, {'form':form})
+    else:
+        form = PositionForm()
+    return render(request, template_name, {'form':form})
+
+@staff_member_required
+def position_change(request, id, template_name='position/position_form.html'):
+    position = Position.objects.get(id=int(id))
+    if request.POST:
+        if request.election_is_occurring:
+            msg = 'Election is occurring. Position modifications are not allowed.'
+            messages.error(request, msg)
+            return redirect('position')
+
+        form = PositionForm(request.POST, instance=position, readonly=request.election_is_occurring)
+        if form.is_valid():
+            form.save()
+            return redirect('position')
+        else:
+            return render(request, template_name, {'form':form})
+    else:
+        # If election is occurring, the form will be readonly
+        form = PositionForm(instance=position, readonly=request.election_is_occurring)
+    return render(request, template_name, {'form':form})
 
 
-def electionConfigurationViewOnly(request):
-    form = electionconfigviewForm()
-    return render(request,'electionconfigview.html',{'form':form})
+
+
+@staff_member_required
+def elector(request, template_name='elector/elector_list.html'):
+    elector_table = ElectorTable(Elector.objects.all())
+    # Exclude delete column if election is occurring
+    if request.election_is_occurring:
+        elector_table.exclude = ('delete')
+    return render(request, template_name, {'elector_table':elector_table })
+
+@staff_member_required
+def elector_delete(request, id):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Delete electors is not allowed.'
+        messages.error(request, msg)
+        return redirect('elector')
+
+    try:
+        Elector.objects.get(id=int(id)).delete()
+    except Exception as e:
+        s = str(e)
+        messages.error(request, e)
+
+    return redirect('elector')
+
+@staff_member_required
+def elector_add(request, template_name='elector/elector_form.html'):
+    if request.election_is_occurring:
+        msg = 'Election is occurring. Elector modifications are not allowed.'
+        messages.warning(request, msg)
+        return redirect('elector')
+
+    if request.POST:
+        form = ElectorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('elector')
+        else:
+            return render(request, template_name, {'form':form})
+    else:
+        form = ElectorForm()
+    return render(request, template_name, {'form':form})
+
+@staff_member_required
+def elector_change(request, id, template_name='elector/elector_form.html'):
+    elector = Elector.objects.get(id=int(id))
+    if request.POST:
+        if request.election_is_occurring:
+            msg = 'Election is occurring. Elector modifications are not allowed.'
+            messages.error(request, msg)
+            return redirect('elector')
+
+        form = ElectorForm(request.POST, instance=elector, readonly=request.election_is_occurring)
+        if form.is_valid():
+            form.save()
+            return redirect('elector')
+        else:
+            return render(request, template_name, {'form':form})
+    else:
+        # If election is occurring, the form will be readonly
+        form = ElectorForm(instance=elector, readonly=request.election_is_occurring)
+    return render(request, template_name, {'form':form})
