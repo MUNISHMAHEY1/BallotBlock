@@ -41,30 +41,39 @@ class ElectionConfigForm(forms.ModelForm):
             ),
         )
 
+    # def clean_start_time(self):
+    #     start_time = self.cleaned_data['start_time']
+    #     if start_time < datetime.datetime.now():
+    #         raise forms.ValidationError("Start time cannot be in past.")
+    #     return start_time
+    #
+    # def clean_end_time(self):
+    #     end_time = self.cleaned_data['end_time']
+    #     if end_time < datetime.datetime.now():
+    #         raise forms.ValidationError("End time cannot be in past.")
+    #     return end_time
 
-        def clean_start_time_again(self):
-            start_time = self.cleaned_data['start_time']
-            end_time = self.cleaned_data['end_time']
-            if start_time > end_time:
-                raise forms.ValidationError("Check if the start time is set properly.")
-                return start_time
-            else:
-                raise forms.ValidationError("Check if the start time is set properly.")
-                return end_time
+    def clean(self):
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get("start_time")
+        end_time = cleaned_data.get("end_time")
+        if start_time < datetime.datetime.now() or start_time > end_time:
+            msg = "Start time is not set properly."
+            self.add_error('start_time', msg)
+        if end_time < datetime.datetime.now() or end_time < start_time:
+            msg = "End time is not set properly."
+            self.add_error('end_time', msg)
 
-    def clean_start_time(self):
-        #cleaned_data = super().clean()
-        start_time = self.cleaned_data['start_time']
-        if start_time < datetime.datetime.now():
-            raise forms.ValidationError("Check if the start time is set properly.")
-        return start_time
 
-    def clean_end_time(self):
-        #cleaned_data = super().clean()
-        end_time = self.cleaned_data['end_time']
-        if end_time < datetime.datetime.now():
-            raise forms.ValidationError("Check if the end time is set properly.")
-        return end_time
+
+        # if end_time < start_time:
+        #     msg = "End time cannot be ending before start time begins."
+        #     self.add_error('end_time', msg)
+        # else:
+        #     msg = "Start time is not set properly."
+        #     self.add_error('start_time', msg)
+
+
 
 
 class electionconfigviewForm(forms.ModelForm):
