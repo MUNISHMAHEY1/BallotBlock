@@ -9,6 +9,7 @@ from election.business import ElectionBusiness
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
 import json
+from django.core.signing import Signer
 
 
 # Create your views here.
@@ -18,6 +19,7 @@ import json
 def vote(request, template_name='vote.html'):
     eb = ElectionBusiness()
     context = {}
+    signer = Signer()
     if eb.isOccurring():
         # Check if elector already voted.
         if Voted.objects.filter(elector__user=request.user).count() > 0:
@@ -36,6 +38,7 @@ def vote(request, template_name='vote.html'):
                     cv.save()
                 elector = Elector.objects.get(user=request.user)
                 voted = Voted.objects.create(elector=elector)
+                voted.system_signature = signer.sign(str(elector.id))
                 voted.save()
                 messages.success(request, 'Your vote was registred successfully')
             except Exception as e:

@@ -22,6 +22,9 @@ class ElectionConfigForm(forms.ModelForm):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
+        self.readonly = False
+        if 'readonly' in kwargs:
+            self.readonly = kwargs.pop('readonly')
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_tag = False
@@ -40,75 +43,36 @@ class ElectionConfigForm(forms.ModelForm):
                 #css_class='form-row'
             ),
         )
+       
+        #Disable all the fields when election is occurring
+        if self.readonly:
+            for field in self.fields.values():
+                field.widget.attrs['readonly'] = True
+                field.disabled = True
+    '''
+    def clean_start_time(self):
+        start_time = self.cleaned_data['start_time']
+        if start_time < datetime.datetime.now():
+            raise forms.ValidationError("Start time cannot be in past.")
+        return start_time
+    
+    def clean_end_time(self):
+        end_time = self.cleaned_data['end_time']
+        if end_time < datetime.datetime.now():
+            raise forms.ValidationError("End time cannot be in past.")
+        return end_time
+    '''
 
-    # def clean_start_time(self):
-    #     start_time = self.cleaned_data['start_time']
-    #     if start_time < datetime.datetime.now():
-    #         raise forms.ValidationError("Start time cannot be in past.")
-    #     return start_time
-    #
-    # def clean_end_time(self):
-    #     end_time = self.cleaned_data['end_time']
-    #     if end_time < datetime.datetime.now():
-    #         raise forms.ValidationError("End time cannot be in past.")
-    #     return end_time
-
+    
     def clean(self):
-        cleaned_data = super().clean()
-        start_time = cleaned_data.get("start_time")
-        end_time = cleaned_data.get("end_time")
-        if start_time < datetime.datetime.now() or start_time > end_time:
-            msg = "Start time is not set properly."
-            self.add_error('start_time', msg)
-        if end_time < datetime.datetime.now() or end_time < start_time:
-            msg = "End time is not set properly."
-            self.add_error('end_time', msg)
-
-
-
-        # if end_time < start_time:
-        #     msg = "End time cannot be ending before start time begins."
-        #     self.add_error('end_time', msg)
-        # else:
-        #     msg = "Start time is not set properly."
-        #     self.add_error('start_time', msg)
-
-
-
-
-class electionconfigviewForm(forms.ModelForm):
-    class Meta:
-        model = ElectionConfig
-        fields = '__all__'
-        widgets = {
-        'description': forms.TextInput(attrs={'readonly': 'readonly'}),
-        'start_time': forms.TextInput(attrs={'readonly': 'readonly'}),
-        'end_time': forms.TextInput(attrs={'readonly': 'readonly'}),
-        'block_time_generation': forms.TextInput(attrs={'readonly': 'readonly'}),
-        'guess_rate': forms.TextInput(attrs={'readonly': 'readonly'}),
-        'min_votes_in_block': forms.TextInput(attrs={'readonly': 'readonly'}),
-        'min_votes_in_last_block': forms.TextInput(attrs={'readonly': 'readonly'}),
-        'attendance_rate': forms.TextInput(attrs={'readonly': 'readonly'}),
-    }
-
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.form_method = 'post'
-        self.helper.layout = Layout(
-            Row(
-                Column('description', css_class='form-group col-md-4 mb-0'),
-                Column('start_time', css_class='form-group col-md-4 mb-0'),
-                Column('end_time', css_class='form-group col-md-4 mb-0'),
-                Column('block_time_generation', css_class='form-group col-md-4 mb-0'),
-                Column('guess_rate', css_class='form-group col-md-4 mb-0'),
-                Column('min_votes_in_block', css_class='form-group col-md-4 mb-0'),
-                Column('min_votes_in_last_block', css_class='form-group col-md-4 mb-0'),
-                Column('attendance_rate', css_class='form-group col-md-4 mb-0'),
-            ),
-        )
+        super().clean()
+        start_time = self.cleaned_data.get("start_time")
+        end_time = self.cleaned_data.get("end_time")
+        if start_time and end_time:
+            if end_time.isoformat() < start_time.isoformat():
+                msg = "Start time is greater than End time."
+                raise forms.ValidationError(msg)
+    
 
 
 class CandidateForm(forms.ModelForm):

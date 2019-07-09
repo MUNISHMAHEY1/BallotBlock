@@ -160,8 +160,6 @@ CRON_CLASSES = [
 RECAPTCHA_PUBLIC_KEY = '6LcOe6wUAAAAACQA6QYTZPUunjZeABQbFoXTgNsO'
 RECAPTCHA_PRIVATE_KEY = '6LcOe6wUAAAAAPhrXUb3V5oBUJy93RKvfaNoi2vn'
 
-
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

@@ -2,19 +2,6 @@
 {% load staticfiles %}
 {% load crispy_forms_tags%}
 
-{% block messages %}
-    {{bloc.super}}
-    {% for message in form.errors %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ message|safe }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% endfor %}
-
-{% endblock messages %}
-
 {% block extrahead %}
     {{ block.super }}
     <script>
@@ -33,25 +20,33 @@
         $( document ).ready(function() {
             $('#id_start_time').datetimepicker({
                 format:'Y-m-d H:i',
+                beforeShow: function(i) { if ($(i).attr('readonly')) { return false; } }
             });
+            
             $('#id_end_time').datetimepicker({
                 format:'Y-m-d H:i',
+                beforeShow: function(i) { if ($(i).attr('readonly')) { return false; } }
             });
-            if (!$('#id_start_time').val()) {
+            
+            if (!$('#id_start_time').val() && !$('#id_start_time').is('[readonly]')) {
                 var now = new Date();
                 now.setDate(now.getDate() + 1);
                 $('#id_start_time').val(now.toISOString().substring(0,10) + ' 00:00');
+            } else {
+                $('#id_start_time').val($('#id_start_time').val());
             }
-            if (!$('#id_end_time').val()) {
+            if (!$('#id_end_time').val() && !$('#id_end_time').is('[readonly]')) {
                 var tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 2);
                 $('#id_end_time').val(tomorrow.toISOString().substring(0,10) + ' 00:00');
+            } else {
+                $('#id_end_time').val($('#id_end_time').val());
             }
 
         });
     </script>
 
-{% endblock %}
+{% endblock extrahead %}
 
 
 {% block content %}

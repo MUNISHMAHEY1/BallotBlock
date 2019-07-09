@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from election.business import ElectionBusiness
 from django.contrib import messages
-from election.forms import VoteForm,ElectionConfigForm, electionconfigviewForm, CandidateForm, PositionForm, ElectorForm
+from election.forms import VoteForm,ElectionConfigForm, CandidateForm, PositionForm, ElectorForm
 from election.signals import canModify
 from election.middleware import ElectionMiddleware
 from election.tables import CandidateTable, PositionTable, ElectorTable
@@ -41,6 +41,15 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
         c = Candidate.objects.create(position=position, name=name)
         c.save()
 
+     # Create 3rd position
+    position = Position.objects.create(description="Best programming language")
+    position.save()
+
+    names = ['Python', 'Javascript', 'Java', 'C#', 'PHP', 'Prolog']
+    for name in names:
+        c = Candidate.objects.create(position=position, name=name)
+        c.save()
+
 
     # Create "elector_quantity" of electors
     # username: userXXX
@@ -69,18 +78,18 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
 @staff_member_required
 def electionConfiguration(request, template_name='electionconfig.html'):
 
-    if request.election_is_occurring:
-        form = electionconfigviewForm()
-        return render(request, template_name, {'form':form})
-
     ec = None
     # If exists at least one row in the table
     if ElectionConfig.objects.all().count() > 0:
         # Select all rows and get the first one.
         ec = ElectionConfig.objects.filter()[0]
 
+    if request.election_is_occurring:
+        form = ElectionConfigForm(instance=ec, readonly=request.election_is_occurring)
+        return render(request, template_name, {'form':form})
+
     if request.POST:
-        form = ElectionConfigForm(request.POST, instance=ec)
+        form = ElectionConfigForm(request.POST, instance=ec, readonly=request.election_is_occurring)
         if form.is_valid():
             form.save()
             msg = 'Election configuration saved'
