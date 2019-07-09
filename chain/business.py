@@ -81,36 +81,50 @@ class HashCalculator():
 
 class BBlock():
 
-    def __init__(self, source_code, database):
-        self.source_code = source_code
-        self.database = database
+    #Private information to be loaded from read or retrieve methods
+    __database_hash = None
+    __source_code_hash = None
+    __candidate_votes = None
+    __electors = None
+    __block_timestamp = None
+    __block_number = None
+    __previous_hash = None
+
+    def __init__(self, block_number=None):
+        if block_number:
+            # Read information from json file
+            self.read(block_number)
+        else:
+            # Retrieve information from database
+            self.retrieve()
 
     def getDatabaseHash(self):
-        #TODO: Returns a dictionary with the information of database
-        #return self.database
+        return self.__database_hash
 
     def getSourceCodeHash(self):
-        #TODO: Returns a dictionary with the information of database
-        #return self.source_code
+        return self.__source_code_hash
 
     def getElectors(self):
         #TODO: Returns a list with electors in this block which already voted
-        return self.electors
+        return self.__electors
 
     def getCandidateVotes(self):
         #TODO: Retunrs a dictionary with Candidates and votes received
-        return self.candidate_votes
+        return self.__candidate_votes
 
     def getHash(self):
         #TODO: Calculates the hash of the block based on information inside the block.
         #This function
-    
-    def getPreviousHash(self):
-        #TODO: Retunrs self.previous_hash
+        return None
 
-    def getBlockDateTimeGeneration(self):
-        #TODO: Returns a timestamp of the block generation.
-        #This information should be added in the block also.
+    def getPreviousHash(self):
+        return self.__previous_hash
+
+    def getBlockTimestamp(self):
+        return self.__block_timestamp
+
+    def getBlockNumber(self):
+        return self.__block_number
 
     def read(self, block_number):
         #TODO: Read json of file and load information to instance variables.
@@ -119,26 +133,23 @@ class BBlock():
         #Load source_code_hash
         #Load Electors
         #Load Votes
+        pass
     
     def retrieve(self):
         #TODO: Read information from database
         hc = HashCalculator()
-        self.database_hash = hc.databaseHash
-        self.source_code = hc.databaseHash
+        self.database_hash = hc.databaseHash()
+        self.source_code = hc.sourceCodeHash()
         self.candidate_votes = CandidateVote.objects.filter().values()
         self.electors = Voted.objects.filter(hash_val=None).values()
-        '''
-        .
-        .
-        .
-        '''
-           
-
-    '''
-    def write(self):
+        
+    
+    def new_write(self):
         #TODO: Just as a good practice, try to refactor the write function.
+        '''
         It should be simple like:
         self.retrieve()
+        while self.get
         content_list = []
         content_list.append(self.getDatabaseHash())
         content_list.append(self.getSourceCodeHash())
@@ -149,7 +160,9 @@ class BBlock():
         json_content = json.dumps(content_list)
         with open(file):
             file.write(json_content)
-    '''
+        '''
+        pass
+    
     
 
     def write(self):
@@ -351,5 +364,4 @@ class BChain():
 
     def read(self):
         # TODO: Read all the files and populate the cain
-
-
+        pass
