@@ -6,15 +6,18 @@
 	<script src="{% static 'chartsjs/2.8.0/js/Chart.bundle.min.js' %}"></script>
 {% endblock%}
 
+{% block breadcrumb %}
+	<nav aria-label="breadcrumb">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+				<li class="breadcrumb-item">Election</li>
+				<li class="breadcrumb-item active" aria-current="page">Results</li>
+			</ol>
+	</nav>
+{% endblock breadcrumb %}
+
 {% block content %}
 
-	<nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-          <li class="breadcrumb-item">Election</li>
-          <li class="breadcrumb-item active" aria-current="page">Results</li>
-        </ol>
-    </nav>
 
 	<div class="row">
 	{% for position in positions %}

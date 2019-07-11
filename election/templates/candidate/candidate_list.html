@@ -11,13 +11,16 @@
     </script>
 {% endblock extrahead %}
 
-{% block content %}
+{% block breadcrumb %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
           <li class="breadcrumb-item active" aria-current="page">Candidates</li>
         </ol>
     </nav>
+{% endblock breadcrumb %}
+
+{% block content %}
 
     {% render_table candidate_table %}
 

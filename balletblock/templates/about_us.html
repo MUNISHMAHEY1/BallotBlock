@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
-{% block content %}
 
+{% block breadcrumb %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
       <li class="breadcrumb-item active" aria-current="page">About us</li>
     </ol>
 </nav>
+{% endblock breadcrumb %}
 
+{% block content %}
 <div class="jumbotron">
     <h1 class="jump text-center">Development Team</h1>
 </div>
