@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from election.models import Elector, Candidate, ElectionConfig, Position
+from vote.models import Voted, CandidateVote
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.contrib.admin.views.decorators import staff_member_required
@@ -286,3 +287,87 @@ def elector_change(request, id, template_name='elector/elector_form.html'):
         # If election is occurring, the form will be readonly
         form = ElectorForm(instance=elector, readonly=request.election_is_occurring)
     return render(request, template_name, {'form':form})
+
+
+@transaction.atomic
+@staff_member_required
+def start_election(request, template_name='election/start_election.html'):
+
+    has_error = False
+
+    # If election is occurring, the tests will not be executed.
+    if request.election_is_occurring:
+        msg = 'Election has already started'
+        messages.warning(request, msg)
+        return render(request, template_name)
+
+    if ElectionConfig.objects.all().count() != 1:
+        has_error = True
+        msg = 'Election Configuration is not configured properly.'
+        messages.error(request, msg)
+
+    ec = ElectionBusiness().getCurrentElectionConfig()
+    if ec:
+        if ec.start_time >= ec.end_time:
+            has_error = True
+            msg = 'Election Configuration start time is greater than end time.'
+            messages.error(request, msg)
+
+        if ec.end_time < datetime.now():
+            has_error = True
+            msg = 'End time of Election Configuration is a past date'
+            messages.error(request, msg)
+
+    if Position.objects.all().count() == 0:
+        has_error = True
+        msg = 'There are not poisitions configurated for the election'
+        messages.error(request, msg)
+
+    for position in Position.objects.all():
+        if position.candidate_set.count() == 0:
+            has_error = True
+            msg = 'Position "{}" does not have candidates'.format(position.description)
+            messages.error(request, msg)
+
+    #Check positions without candidates
+    #Check electors
+    if Elector.objects.all().count() == 0:
+        messages.error(request, 'There are not electors configurated for the election')
+        has_error = True
+
+    # Delete votes, results, blocks, etc...
+    if not has_error:
+        Voted.objects.all().delete()
+        CandidateVote.objects.all().delete()
+        for candidate in Candidate.objects.all():
+            cv = CandidateVote.objects.create(candidate=candidate, quantity=0)
+            cv.save()
+        
+        ec = ElectionConfig.objects.all()[0]
+        ec.locked = True
+        ec.save()
+            
+    return render(request, template_name)
+
+@transaction.atomic
+@staff_member_required
+def clean_election(request, template_name='election/clean_election.html'):
+    if request.election_is_occurring:
+        messages.error(request, 'Election is occurring')
+        return render(request, template_name)
+
+    # Delete tables of resutls
+    Voted.objects.all().delete()
+    CandidateVote.objects.all().delete()
+
+    # Delete tables of election
+    Elector.objects.all().delete()
+    Candidate.objects.all().delete()
+    Position.objects.all().delete()
+    ElectionConfig.objects.all().delete()
+
+    # Delete users which are not superuser
+    User.objects.filter(is_superuser=False).delete()
+
+    messages.success(request, 'Election is clean')
+    return render(request, template_name)

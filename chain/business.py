@@ -89,6 +89,7 @@ class BBlock():
     __block_timestamp = None
     __block_number = None
     __previous_hash = None
+    __cv_quantity = 0
 
     def __init__(self, block_number=None):
         if block_number:
@@ -134,14 +135,29 @@ class BBlock():
         #Load Electors
         #Load Votes
         pass
+
+    def refresh_candidate_votes(self):
+        # list was used to force the queryset evaluation
+        self.__candidate_votes = list(CandidateVote.objects.filter().values())
+        self.__cv_quantity = 0
+        for cv in self.__candidate_votes:
+            self.__cv_quantity += cv['quantity']
     
+    def refresh_electors(self):
+        # list was used to force the queryset evaluation
+        self.__electors = list(Voted.objects.filter(hash_val__isnull=True).values())
+
     def retrieve(self):
         #TODO: Read information from database
         hc = HashCalculator()
-        self.database_hash = hc.databaseHash()
-        self.source_code = hc.sourceCodeHash()
-        self.candidate_votes = CandidateVote.objects.filter().values()
-        self.electors = Voted.objects.filter(hash_val=None).values()
+        self.__database_hash = hc.databaseHash()
+        self.__source_code_hash = hc.sourceCodeHash()
+        self.refresh_candidate_votes()
+        self.refresh_electors()
+        # Refresh the electors and votes while quantity is different
+        while self.__cv_quantity != (len(self.__electors) * Position.objects.count()):
+            self.refresh_candidate_votes()
+            self.refresh_electors()
         
     
     def new_write(self):

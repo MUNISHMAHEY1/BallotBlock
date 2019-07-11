@@ -41,6 +41,10 @@
     {% endblock nav %}
 
     <main role="main" class="container">
+
+        {% block breadcrumb %}
+        {% endblock breadcrumb %}
+
         {% block bmessages %}
           {% if messages %}
             {% for message in messages %}

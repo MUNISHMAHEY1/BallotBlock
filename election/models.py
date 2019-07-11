@@ -45,7 +45,7 @@ class Position(models.Model):
 
 class Candidate(models.Model):
     name = models.CharField(max_length=300, unique=True, null=False, blank=False)
-    position = models.ForeignKey(Position, null=False, blank=False, on_delete=models.PROTECT)
+    position = models.ForeignKey(Position, null=False, blank=False, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
