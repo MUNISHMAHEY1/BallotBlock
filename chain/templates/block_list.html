@@ -20,8 +20,8 @@
                 <div class="card-header">{{bblock.block_hash}}</div>
                 <div class="card-body">
                     <ul>
-                        <li>{{bblock.database_hash}}</li>
-                        <li>{{bblock.souce_code_hash}}</li>
+                        <li>{{bblock.database_hash | truncatechars:255 }}</li>
+                        <li>{{bblock.source_code_hash | truncatechars:255 }}</li>
                         <li>{{bblock.candidate_votes}}</li>
                         <li>{{bblock.electors}}</li>
                         <li>{{bblock.timestamp_iso}}</li>

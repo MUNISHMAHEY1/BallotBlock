@@ -97,7 +97,7 @@ class BBlockHandler():
         #bblock = BBlock.objects.create()
         bblock = BBlock()
         bblock.database_hash = str(hc.databaseHash())
-        bblock.source_code_hash = str(hc.databaseHash())
+        bblock.source_code_hash = str(hc.sourceCodeHash())
         bblock.timestamp_iso = datetime.datetime.now().isoformat()
 
         same_qtt_votes = False
@@ -138,7 +138,7 @@ class BBlockHandler():
         #bblock = BBlock.objects.create()
         bblock = BBlock()
         bblock.database_hash = str(hc.databaseHash())
-        bblock.source_code_hash = str(hc.databaseHash())
+        bblock.source_code_hash = str(hc.sourceCodeHash())
         bblock.electors = str(list(Voted.objects.all().values()))
         bblock.candidate_votes = str(list(CandidateVote.objects.all().values()))
         bblock.timestamp_iso = datetime.datetime.now().isoformat()
