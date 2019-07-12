@@ -1,7 +1,7 @@
 from django.core.serializers.json import DjangoJSONEncoder
 from election.models import ElectionConfig, Candidate, Elector, Position
 from vote.models import Voted, CandidateVote
-from chain.models import BlockStructure
+from chain.models import BBlock_db,BlockStructure
 from django.contrib.auth.models import User
 import hashlib
 import json
@@ -158,7 +158,12 @@ class BBlock():
         while self.__cv_quantity != (len(self.__electors) * Position.objects.count()):
             self.refresh_candidate_votes()
             self.refresh_electors()
-        
+    
+    def isgenysis(self):
+        if BBlock_db.objects.count() > 0:
+            return BBlock_db.objects.count()
+        else:
+            return 0
     
     def new_write(self):
         #TODO: Just as a good practice, try to refactor the write function.
@@ -177,13 +182,51 @@ class BBlock():
         with open(file):
             file.write(json_content)
         '''
-        pass
+        # self.retrieve()
+        # print(self.__database_hash)
+        # content_list = []
+        # content_list.append(self.getDatabaseHash()) 
+        # Why not do it this way? Like what I've done below?
+        #block_no must be added
+        #block_hash
+        # content_list.append(self.__previous_hash)
+        # content_list.append(self.__database_hash)  
+        # content_list.append(self.__source_code_hash)
+        # content_list.append(self.__candidate_votes)
+        # content_list.append(self.__electors)
+        # content_list.append(self.__block_timestamp)
+        # content_list.append(self.__cv_quantity)
+        content_list={}     #Thought it was better to write to dictionary
+        self.retrieve()
+        
+        block_no=self.isgenysis()
+        if not block_no:
+            parent_hash= '000' #temporary
+        else:
+            parent_hash=self.getPreviousHash()
+    
+
+        # content_list['previous_hash']=self.__previous_hash
+        content_list['previous_hash']=parent_hash
+        content_list['database_hash']=self.__database_hash
+        content_list['source_code_hash']=self.__source_code_hash
+        content_list['candidate_votes']=self.__candidate_votes
+        content_list['electors']=self.__electors
+        content_list['timestamp_iso']=self.__block_timestamp
+        content_list['total_votes']=self.__cv_quantity
+        
+        print(content_list)
+        print("Here!!")
+        
+        # pass
     
     
 
     def write(self):
         # TODO: Implement the write method to write in a file
         print("Inside write")
+        obj=BBlock()
+        obj.new_write()
         queryset_elecConfig = ElectionConfig.objects.all()
         #print(dir(queryset))
         queryset_voted = Voted.objects.all().filter(hash_val=None)
