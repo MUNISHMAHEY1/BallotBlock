@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from election.models import Elector, Candidate, ElectionConfig, Position
 from vote.models import Voted, CandidateVote
+from chain.models import BBlock
+from chain.business import BBlockHandler
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.contrib.admin.views.decorators import staff_member_required
@@ -342,6 +344,10 @@ def start_election(request, template_name='election/start_election.html'):
         for candidate in Candidate.objects.all():
             cv = CandidateVote.objects.create(candidate=candidate, quantity=0)
             cv.save()
+        BBlock.objects.all().delete()
+        
+        # Add genesis block
+        BBlockHandler().add_genesis()
         
         ec = ElectionConfig.objects.all()[0]
         ec.locked = True
@@ -368,6 +374,8 @@ def clean_election(request, template_name='election/clean_election.html'):
 
     # Delete users which are not superuser
     User.objects.filter(is_superuser=False).delete()
+
+    BBlock.objects.all().delete()
 
     messages.success(request, 'Election is clean')
     return render(request, template_name)

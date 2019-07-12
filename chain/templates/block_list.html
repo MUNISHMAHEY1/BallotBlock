@@ -14,6 +14,41 @@
 
 {% block content %}
 <div class="row">
+    {% for bblock in bblock_list %}
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">{{bblock.block_hash}}</div>
+                <div class="card-body">
+                    <ul>
+                        <li>{{bblock.database_hash}}</li>
+                        <li>{{bblock.souce_code_hash}}</li>
+                        <li>{{bblock.candidate_votes}}</li>
+                        <li>{{bblock.electors}}</li>
+                        <li>{{bblock.timestamp_iso}}</li>
+                        <li>{{bblock.total_votes}}</li>
+                    </ul>
+                    <!--
+                    <p class="card-text">{{bblock.database_hash}}</p>
+                    <p class="card-text">{{bblock.souce_code_hash}}</p>
+                    <p class="card-text">{{bblock.electors}}</p>
+                    <p class="card-text">{{bblock.candidate_votes}}</p>
+                    <p class="card-text">{{bblock.total_votes}}</p>
+                    -->
+                </div>
+                <div class="card-footer">{{bblock.parent_hash}}</div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <a href="{% url 'block_add' %}" class="btn btn-primary">Add Block</a>
+    </div>
+</div>
+    
+
+
+<div class="row">
     <div class="col-md-4">
         <div class="card text-white bg-success mb-3">
             <div class="card-header">Header</div>
