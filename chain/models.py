@@ -1,4 +1,5 @@
 from django.db import models
+import hashlib
 
 # Create your models here.
 
@@ -7,15 +8,32 @@ class BlockStructure(models.Model):
      BlockNo= models.IntegerField(unique=True,null=False,blank=False)
      ParentHash=models.CharField(max_length=200, null=True, blank=False, default=None)
 
-class BBlock_db(models.Model):
-     block_no=models.IntegerField(unique=True,null=False, blank=False)
-     block_hash = models.CharField(max_length=2048, null=False, blank=False)
-     previous_hash = models.CharField(max_length=2048, null=False, blank=False)
-     database_hash=models.TextField(blank=False,unique=True)
-     source_code_hash=models.TextField(blank=False,unique=True)
-     candidate_votes=models.TextField(blank=True,null=True)
-     electors=models.TextField(blank=True,null=True)
+class BBlock(models.Model):
+     
+     block_hash = models.CharField(max_length=128, null=False, blank=False)
+     parent_hash = models.CharField(max_length=128, null=False, blank=False)
+     database_hash = models.TextField(blank=False)
+     source_code_hash = models.TextField(blank=False)
+     candidate_votes = models.TextField(blank=True, null=True)
+     electors = models.TextField(blank=True,null=True)
      timestamp_iso = models.CharField(max_length=30, null=False, blank=False)
-     total_votes=models.IntegerField(blank=False)
-     parent_hash=models.TextField(blank=False,unique=True)
+     total_votes = models.IntegerField(null=False, blank=False)
+
+     @property
+     def isGenesis(self):
+          if self.parent_hash == '0'.zfill(128):
+               return True
+          return False
+
+     def calculateHash(self):
+          m = hashlib.sha512()
+          m.update(self.parent_hash.encode("utf-8"))
+          m.update(self.database_hash.encode("utf-8"))
+          m.update(self.source_code_hash.encode("utf-8"))
+          m.update(self.candidate_votes.encode("utf-8"))
+          m.update(self.electors.encode("utf-8"))
+          m.update(self.timestamp_iso.encode("utf-8"))
+          m.update(str(self.total_votes).encode("utf-8"))
+          return m.hexdigest()
+
      

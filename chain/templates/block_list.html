@@ -13,68 +13,39 @@
 
 
 {% block content %}
+    {% for bblock in bblock_list %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Parent hash: {{bblock.parent_hash}}</div>
+                <div class="card-body">
+                    <ul>
+                        <li>{{bblock.database_hash }}</li>
+                        <li>{{bblock.source_code_hash | truncatechars:1024 }}</li>
+                        <li>{{bblock.candidate_votes }}</li>
+                        <li>{{bblock.electors}}</li>
+                        <li>{{bblock.timestamp_iso}}</li>
+                        <li>{{bblock.total_votes}}</li>
+                    </ul>
+                    <!--
+                    <p class="card-text">{{bblock.database_hash}}</p>
+                    <p class="card-text">{{bblock.souce_code_hash}}</p>
+                    <p class="card-text">{{bblock.electors}}</p>
+                    <p class="card-text">{{bblock.candidate_votes}}</p>
+                    <p class="card-text">{{bblock.total_votes}}</p>
+                    -->
+                </div>
+                <div class="card-footer">Block hash: {{bblock.block_hash}}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+
 <div class="row">
     <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-header">Header</div>
-            <div class="card-body">
-                <h4 class="card-title">Success card title</h4>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer">Hash</div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-header">Header</div>
-            <div class="card-body">
-                <h4 class="card-title">Success card title</h4>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer">Hash</div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-header">Header</div>
-            <div class="card-body">
-                <h4 class="card-title">Success card title</h4>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer">Hash</div>
-        </div>
+        <a href="{% url 'block_add' %}" class="btn btn-primary">Add Block</a>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-header">Header</div>
-            <div class="card-body">
-                <h4 class="card-title">Success card title</h4>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer">Hash</div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-header">Header</div>
-            <div class="card-body">
-                <h4 class="card-title">Success card title</h4>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer">Hash</div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-header">Header</div>
-            <div class="card-body">
-                <h4 class="card-title">Success card title</h4>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-            <div class="card-footer">Hash</div>
-        </div>
-    </div>
-</div>
+   
 {% endblock content %}

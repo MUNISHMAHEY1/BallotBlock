@@ -19,7 +19,8 @@ class VoteForm(forms.Form):
 class ElectionConfigForm(forms.ModelForm):
     class Meta:
         model = ElectionConfig
-        fields = '__all__'
+        #fields = '__all__'
+        exclude = ('locked',)
 
     def __init__(self, *args, **kwargs):
         self.readonly = False
@@ -39,7 +40,7 @@ class ElectionConfigForm(forms.ModelForm):
                 Column('min_votes_in_block', css_class='form-group col-md-4 mb-0'),
                 Column('min_votes_in_last_block', css_class='form-group col-md-4 mb-0'),
                 Column('attendance_rate', css_class='form-group col-md-4 mb-0'),
-                Column('locked', css_class='form-group col-md-4 mb-0'),
+                #Column('locked', css_class='form-group col-md-4 mb-0'),
                 #css_class='form-row'
             ),
         )
