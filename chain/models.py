@@ -17,7 +17,7 @@ class BBlock(models.Model):
      candidate_votes = models.TextField(blank=True, null=True)
      electors = models.TextField(blank=True,null=True)
      timestamp_iso = models.CharField(max_length=30, null=False, blank=False)
-     total_votes = models.IntegerField(null=False, blank=False)
+     total_votes = models.IntegerField(null=True, blank=False)
 
      @property
      def isGenesis(self):
