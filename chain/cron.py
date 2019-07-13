@@ -1,5 +1,6 @@
 from django_cron import CronJobBase, Schedule
 from election.models import ElectionConfig
+from chain.business import BBlockHandler
 import logging
 
 class BlockChainCronJob(CronJobBase):
@@ -17,8 +18,7 @@ class BlockChainCronJob(CronJobBase):
         #TODO: Call the block generator function
 
         logger = logging.getLogger(__name__)
-        logger.info('Info log test')
-        logger.debug('Debug log test')
-        logger.error('Error log test')
+        logger.info('Start block generation...')
+        bbh = BBlockHandler().add()
+        
 
-        print("Block chain cron job is running...")

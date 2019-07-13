@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+{% block extrahead %}
+<style>
+    .card {font-family: monospace; font-size: 13px;}
+</style>
+{% endblock extrahead %}
 
 {% block breadcrumb %}
     <nav aria-label="breadcrumb">
