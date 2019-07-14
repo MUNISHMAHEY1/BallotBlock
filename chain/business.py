@@ -86,26 +86,9 @@ class BBlockHandler():
     def add(self):
 
         if BBlock.objects.all().count() == 0:
-            hc = HashCalculator()
-            bblock_obj=BBlock()
+            raise Exception('It is not possible to add a block without genesis block')
             
-            bblock_obj.database_hash = str(hc.databaseHash())
-            bblock_obj.source_code_hash = str(hc.sourceCodeHash())
-            bblock_obj.timestamp_iso = datetime.datetime.now().isoformat()
-            cv_quantity=0
-            electors = list(Voted.objects.filter(hash_val='x').values())
-            candidate_votes=0
-            bblock_obj.candidate_votes = str(candidate_votes)
-            bblock_obj.electors = str(electors)
-            bblock_obj.parent_hash = '0'.zfill(128)
-            bblock_obj.block_hash = bblock_obj.calculateHash()
-            bblock_obj.total_votes = cv_quantity
-            bblock_obj.save()
-            Voted.objects.filter(hash_val='x').update(hash_val=bblock_obj.block_hash)
-
-        last_block = None
-        if BBlock.objects.all().count() > 0:
-            last_block = BBlock.objects.all().order_by('-timestamp_iso')[0]
+        last_block = BBlock.objects.all().order_by('-timestamp_iso')[0]
 
         hc = HashCalculator()
 
