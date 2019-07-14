@@ -345,13 +345,13 @@ def start_election(request, template_name='election/start_election.html'):
             cv = CandidateVote.objects.create(candidate=candidate, quantity=0)
             cv.save()
         BBlock.objects.all().delete()
-        
-        # Add genesis block
-        BBlockHandler().add_genesis()
-        
+
         ec = ElectionConfig.objects.all()[0]
         ec.locked = True
         ec.save()
+        
+        # Add genesis block
+        BBlockHandler().add_genesis()
             
     return render(request, template_name)
 

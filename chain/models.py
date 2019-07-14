@@ -13,11 +13,13 @@ class BBlock(models.Model):
      block_hash = models.CharField(max_length=128, null=False, blank=False)
      parent_hash = models.CharField(max_length=128, null=False, blank=False)
      database_hash = models.TextField(blank=False)
+     hash_of_database_hash = models.CharField(max_length=128, null=False, blank=False)
      source_code_hash = models.TextField(blank=False)
+     hash_of_source_code_hash = models.CharField(max_length=128, null=False, blank=False)
      candidate_votes = models.TextField(blank=True, null=True)
      electors = models.TextField(blank=True,null=True)
      timestamp_iso = models.CharField(max_length=30, null=False, blank=False)
-     total_votes = models.IntegerField(null=True, blank=False)
+     total_votes = models.IntegerField(null=False, blank=False)
 
      @property
      def isGenesis(self):
@@ -35,5 +37,18 @@ class BBlock(models.Model):
           m.update(self.timestamp_iso.encode("utf-8"))
           m.update(str(self.total_votes).encode("utf-8"))
           return m.hexdigest()
+
+     def calculateHashOfDatabaseHash(self):
+          m = hashlib.sha512()
+          m.update(self.hash_of_database_hash.encode("utf-8"))
+          return m.hexdigest()
+
+     def calculateHashOfSourceCodeHash(self):
+          m = hashlib.sha512()
+          m.update(self.source_code_hash.encode("utf-8"))
+          return m.hexdigest()
+
+
+
 
      
