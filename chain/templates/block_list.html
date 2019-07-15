@@ -18,19 +18,19 @@
 
 
 {% block content %}
+<div class="row">
     {% for bblock in bblock_list %}
-    <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="card text-white bg-success mb-3">
                 <div class="card-header">Parent hash: {{bblock.parent_hash}}</div>
                 <div class="card-body">
                     <ul>
-                        <li>{{bblock.database_hash }}</li>
-                        <li>{{bblock.source_code_hash | truncatechars:1024 }}</li>
-                        <li>{{bblock.candidate_votes }}</li>
-                        <li>{{bblock.electors}}</li>
+                        <li>Database hash:{{bblock.hash_of_database_hash }}</li>
+                        <li>Source code hash: {{bblock.hash_of_source_code_hash }}</li>
+                        <li>Election results: {{bblock.candidate_votes }}</li>
+                        <li>Electors: {{bblock.electors}}</li>
+                        <li>Total of votes: {{bblock.total_votes}}</li>
                         <li>{{bblock.timestamp_iso}}</li>
-                        <li>{{bblock.total_votes}}</li>
                     </ul>
                     <!--
                     <p class="card-text">{{bblock.database_hash}}</p>
@@ -43,9 +43,8 @@
                 <div class="card-footer">Block hash: {{bblock.block_hash}}</div>
             </div>
         </div>
-    </div>
     {% endfor %}
-
+</div>
 
 <div class="row">
     <div class="col-md-4">

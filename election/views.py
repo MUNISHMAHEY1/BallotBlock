@@ -20,11 +20,24 @@ from django_tables2.config import RequestConfig
 @staff_member_required
 def config_mock_election(request, elector_quantity=501, template_name='mock_election.html'):
 
-    # Clean database
+    if request.election_is_occurring:
+        messages.error(request, 'Election is occurring')
+        return render(request, template_name)
+
+    # Delete tables of resutls
+    Voted.objects.all().delete()
+    CandidateVote.objects.all().delete()
+
+    # Delete tables of election
     Elector.objects.all().delete()
     Candidate.objects.all().delete()
     Position.objects.all().delete()
+    ElectionConfig.objects.all().delete()
+
+    # Delete users which are not superuser
     User.objects.filter(is_superuser=False).delete()
+
+    BBlock.objects.all().delete()
 
     # Create 1st position
     position = Position.objects.create(description="Best soccer player of all time")
@@ -82,6 +95,7 @@ def config_mock_election(request, elector_quantity=501, template_name='mock_elec
         elector_list.append(e)
     Elector.objects.bulk_create(elector_list)
 
+    messages.success(request, 'Mock election generated')
     return render(request, template_name)
 
 # Only staff members can access the election configuration
