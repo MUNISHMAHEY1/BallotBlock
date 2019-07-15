@@ -11,6 +11,16 @@
 {% endblock breadcrumb %}
 
 {% block content %}
+<style>
+    .breadcrumb{
+        background-color:#383636;
+        color:#ffffff;
+    }
+    .jumbotron{
+        background-color:#383636;
+        color:#ffffff;
+    }
+</style>
 <div class="jumbotron">
     <h1 class="jump text-center">Development Team</h1>
 </div>
@@ -26,20 +36,20 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr class="table-danger">
           <td>104934797</td>
           <td>Fabio Ribeiro Santiago</td>
-          <td><a href="mailto:santia11@uwindsor.ca">santia11@uwindsor.ca</a></td>
+          <td>santia11@uwindsor.ca</td>
         </tr>
-        <tr>
+        <tr class="table-success">
           <td>105099194</td>
           <td>Sarath Pulikkal</td>
-          <td><a href="mailto:pulikka@uwindsor.ca">pulikka@uwindsor.ca</a></td>
+          <td>pulikka@uwindsor.ca</td>
         </tr>
-        <tr>
+        <tr class="table-info">
           <td>105146209</td>
           <td>Munish</td>
-          <td><a href="mailto:munish@uwindsor.ca">munish@uwindsor.ca</a></td>
+          <td >munish@uwindsor.ca</td>
         </tr>
       </tbody>
   </table>
