@@ -15,6 +15,7 @@ from election.signals import canModify
 from election.middleware import ElectionMiddleware
 from election.tables import CandidateTable, PositionTable, ElectorTable
 from django_tables2.config import RequestConfig
+from django.contrib.auth.hashers import make_password
 
 @transaction.atomic
 @staff_member_required
@@ -78,7 +79,7 @@ def config_mock_election(request, elector_quantity=501, template_name='mock_elec
     while i < elector_quantity:
         username = ''.join(('user', str(i).zfill(s)))
         email = ''.join((username, '@balletblock.com'))
-        password = ''.join(('BalletBlock', str(i).zfill(s) ))
+        password = make_password(''.join(('BalletBlock', str(i).zfill(s) )), None, 'md5')
         user_list.append(User(username=username,
                                  email=email,
                                  password=password,
