@@ -18,7 +18,7 @@ from django_tables2.config import RequestConfig
 
 @transaction.atomic
 @staff_member_required
-def config_mock_election(request, elector_quantity=500, template_name='mock_election.html'):
+def config_mock_election(request, elector_quantity=501, template_name='mock_election.html'):
 
     # Clean database
     Elector.objects.all().delete()
@@ -61,19 +61,26 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
 
     i = 1
     s = len(str(elector_quantity))
+    user_list = []
     while i < elector_quantity:
         username = ''.join(('user', str(i).zfill(s)))
         email = ''.join((username, '@balletblock.com'))
         password = ''.join(('BalletBlock', str(i).zfill(s) ))
-        user = User.objects.create_user(username=username,
+        user_list.append(User(username=username,
                                  email=email,
                                  password=password,
                                  first_name='user',
-                                 last_name=str(i).zfill(s))
-        user.save()
-        e = Elector.objects.create(user=user)
-        e.save()
+                                 last_name=str(i).zfill(s)))
         i = i + 1
+    
+    User.objects.bulk_create(user_list)
+    users = User.objects.filter(is_superuser=False)
+
+    elector_list = []
+    for u in users:
+        e = Elector(user=u)
+        elector_list.append(e)
+    Elector.objects.bulk_create(elector_list)
 
     return render(request, template_name)
 
