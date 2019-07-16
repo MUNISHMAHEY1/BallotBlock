@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item">About</li>
+      <li class="breadcrumb-item active" aria-current="page">Documentation</li>
+    </ol>
+</nav>
+{% endblock breadcrumb %}
+
+{% block content %}
+<h2>Write documentation of the system</h2>
+{% endblock content %}

@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'election',
     'chain',
     'vote',
+    'documentation',
 ]
 
 MIDDLEWARE = [
