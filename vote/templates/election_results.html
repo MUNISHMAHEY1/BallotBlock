@@ -17,7 +17,12 @@
 {% endblock breadcrumb %}
 
 {% block content %}
-
+<style>
+    .breadcrumb{
+        background-color:#383636;
+        color:#ffffff;
+    }
+</style>
 
 	<div class="row">
 	{% for position in positions %}
@@ -87,8 +92,7 @@
 			drawChart(elementId, results_data[i]);
 		}
 	});
-	
-	
+
+
 </script>
 {% endblock content %}
-

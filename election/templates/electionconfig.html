@@ -22,12 +22,12 @@
                 format:'Y-m-d H:i',
                 beforeShow: function(i) { if ($(i).attr('readonly')) { return false; } }
             });
-            
+
             $('#id_end_time').datetimepicker({
                 format:'Y-m-d H:i',
                 beforeShow: function(i) { if ($(i).attr('readonly')) { return false; } }
             });
-            
+
             if (!$('#id_start_time').val() && !$('#id_start_time').is('[readonly]')) {
                 var now = new Date();
                 now.setDate(now.getDate() + 1);
@@ -59,6 +59,13 @@
 {% endblock breadcrumb %}
 
 {% block content %}
+
+<style>
+    .breadcrumb{
+        background-color:#383636;
+        color:#ffffff;
+    }
+</style>
     <form method="post" action="{{ request.path }}">
         {% crispy form %}
 

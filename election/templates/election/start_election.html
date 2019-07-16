@@ -11,6 +11,12 @@
 </nav>
 {% endblock breadcrumb %}
 {% block content %}
+<style>
+    .breadcrumb{
+        background-color:#383636;
+        color:#ffffff;
+    }
+</style>
     {% if not election_is_occurring %}
         <a href="{% url 'start_election' %}" class="btn btn-success">Refresh</a>
     {% endif %}
