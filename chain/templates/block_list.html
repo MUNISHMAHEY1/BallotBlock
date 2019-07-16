@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+{% load render_table from django_tables2 %}
 {% block extrahead %}
 <style>
     .card {font-family: monospace; font-size: 13px;}
@@ -67,10 +68,15 @@
     {% endfor %}
 </div>
 
+<hr></hr>
+    {% render_table bblock_table %}
+<hr></hr>
+
 <div class="row">
     <div class="col-md-4">
         <a href="{% url 'block_add' %}" class="btn btn-primary">Add Block</a>
     </div>
 </div>
+
 
 {% endblock content %}
