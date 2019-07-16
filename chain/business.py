@@ -54,12 +54,15 @@ class HashCalculator():
         return {'database':hash_dict}
 
     def __ignoreFile(self, filename):
-        if filename.startswith('.'):
-            return True
-        if filename.endswith('.pyc'):
-            # print(filename)
-            return True
-        return False
+        if filename.endswith('.py'):
+            return False
+        if filename.endswith('.js'):
+            return False
+        if filename.endswith('.css'):
+            return False
+        if filename.endswith('.html'):
+            return False
+        return True
 
     def sourceCodeHash(self):
         BUF_SIZE = 65536

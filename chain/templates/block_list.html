@@ -21,26 +21,41 @@
 <div class="row">
     {% for bblock in bblock_list %}
         <div class="col-md-6">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-header">Parent hash: {{bblock.parent_hash}}</div>
-                <div class="card-body">
-                    <ul>
-                        <li>Database hash:{{bblock.hash_of_database_hash }}</li>
-                        <li>Source code hash: {{bblock.hash_of_source_code_hash }}</li>
-                        <li>Election results: {{bblock.candidate_votes }}</li>
-                        <li>Electors: {{bblock.electors}}</li>
-                        <li>Total of votes: {{bblock.total_votes}}</li>
-                        <li>{{bblock.timestamp_iso}}</li>
-                    </ul>
-                    <!--
-                    <p class="card-text">{{bblock.database_hash}}</p>
-                    <p class="card-text">{{bblock.souce_code_hash}}</p>
-                    <p class="card-text">{{bblock.electors}}</p>
-                    <p class="card-text">{{bblock.candidate_votes}}</p>
-                    <p class="card-text">{{bblock.total_votes}}</p>
-                    -->
+            <div class="mb-3">
+                <div class="card text-white bg-success">
+                    <div class="card-header">Parent hash: {{bblock.parent_hash}}</div>
+                    
+                        <ul class="list-group text-white bg-success">
+                            <li class="list-group-item text-white bg-success">
+                                <h6 class="card-subtitle">Database hash:</h6>
+                                <a href="{% url 'database_hash' bblock_id=bblock.id %}" class="text-white" target="_blank">
+                                        {{bblock.hash_of_database_hash }}
+                                </a>
+                            </li>
+                            <li class="list-group-item text-white bg-success">
+                                <h6 class="card-subtitle">Source code hash:</h6>
+                                <a href="{% url 'source_code_hash' bblock_id=bblock.id %}" class="text-white" target="_blank">
+                                    {{bblock.hash_of_source_code_hash }}
+                                </a>
+                            </li>
+                            <li class="list-group-item text-white bg-success">
+                                <h6 class="card-subtitle">Election results:</h6>
+                                {{bblock.candidate_votes}}
+                            </li>
+                            <li class="list-group-item text-white bg-success">
+                                <h6 class="card-subtitle">Electors who voted:</h6>
+                                {{bblock.electors}}
+                            </li>
+                            <li class="list-group-item text-white bg-success">
+                                Total of votes: {{bblock.total_votes}}
+                            </li>
+                            <li class="list-group-item text-white bg-success">
+                                Block generated time: {{bblock.timestamp_iso}}
+                            </li>
+                        </ul>
+                    
+                    <div class="card-footer">Block hash: {{bblock.block_hash}}</div>
                 </div>
-                <div class="card-footer">Block hash: {{bblock.block_hash}}</div>
             </div>
         </div>
     {% endfor %}
