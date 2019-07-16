@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load staticfiles %}
 {% load crispy_forms_tags %}
 
 {% block extrahead %}
@@ -24,6 +24,12 @@
 {% endblock nav %}
 
 {% block content %}
+    <style>
+        h1 {
+            margin-top: 100px;
+            padding: 20px;
+            }
+    </style>
     {% if form.errors %}
         <div class="alert alert-danger" role="alert">
             Your username and password didn't match. Please try again.
@@ -51,8 +57,6 @@
                 <input type="submit" value="login" class="btn btn-primary float-right" />
                 <input type="hidden" name="next" value="{{ next }}" />
             </form>
-        </div>
-        <div class="col-md-4">
         </div>
     </div>
 {% endblock content %}
