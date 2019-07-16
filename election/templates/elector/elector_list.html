@@ -21,6 +21,11 @@
 {% endblock breadcrumb %}
 
 {% block content %}
+<style>
+    .breadcrumb{
+        background-color:#383636;
+    }
+</style>
     {% render_table elector_table %}
 
     {% if not election_is_occurring %}

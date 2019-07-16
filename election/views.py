@@ -15,16 +15,30 @@ from election.signals import canModify
 from election.middleware import ElectionMiddleware
 from election.tables import CandidateTable, PositionTable, ElectorTable
 from django_tables2.config import RequestConfig
+from django.contrib.auth.hashers import make_password
 
 @transaction.atomic
 @staff_member_required
-def config_mock_election(request, elector_quantity=500, template_name='mock_election.html'):
+def config_mock_election(request, elector_quantity=501, template_name='mock_election.html'):
 
-    # Clean database
+    if request.election_is_occurring:
+        messages.error(request, 'Election is occurring')
+        return render(request, template_name)
+
+    # Delete tables of resutls
+    Voted.objects.all().delete()
+    CandidateVote.objects.all().delete()
+
+    # Delete tables of election
     Elector.objects.all().delete()
     Candidate.objects.all().delete()
     Position.objects.all().delete()
+    ElectionConfig.objects.all().delete()
+
+    # Delete users which are not superuser
     User.objects.filter(is_superuser=False).delete()
+
+    BBlock.objects.all().delete()
 
     # Create 1st position
     position = Position.objects.create(description="Best soccer player of all time")
@@ -61,20 +75,28 @@ def config_mock_election(request, elector_quantity=500, template_name='mock_elec
 
     i = 1
     s = len(str(elector_quantity))
+    user_list = []
     while i < elector_quantity:
         username = ''.join(('user', str(i).zfill(s)))
         email = ''.join((username, '@balletblock.com'))
-        password = ''.join(('BalletBlock', str(i).zfill(s) ))
-        user = User.objects.create_user(username=username,
+        password = make_password(''.join(('BalletBlock', str(i).zfill(s) )), None, 'md5')
+        user_list.append(User(username=username,
                                  email=email,
                                  password=password,
                                  first_name='user',
-                                 last_name=str(i).zfill(s))
-        user.save()
-        e = Elector.objects.create(user=user)
-        e.save()
+                                 last_name=str(i).zfill(s)))
         i = i + 1
+    
+    User.objects.bulk_create(user_list)
+    users = User.objects.filter(is_superuser=False)
 
+    elector_list = []
+    for u in users:
+        e = Elector(user=u)
+        elector_list.append(e)
+    Elector.objects.bulk_create(elector_list)
+
+    messages.success(request, 'Mock election generated')
     return render(request, template_name)
 
 # Only staff members can access the election configuration

@@ -18,7 +18,8 @@
                   <a class="dropdown-item" href="{% url 'start_election' %}">Start Election</a>
                   <a class="dropdown-item" href="{% url 'election_results' %}">Results</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#CleanElectionModal">Clean</a>
+                  <a class="dropdown-item" href="#" data-toggle="modal" data-target="#CleanElectionModal">Clean <i class="fas fa-exclamation-circle" style="color:red"></i></a>
+                  <a class="dropdown-item" href="{% url 'config_mock_election' %}">Mock Election <i class="fas fa-exclamation-circle" style="color:red"></i></a>
                 {% endif %}
             </div>
           </li>
