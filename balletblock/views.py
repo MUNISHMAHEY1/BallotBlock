@@ -29,5 +29,9 @@ def home(request):
 def about_us(request):
 	return render(request, 'about_us.html')
 
+@login_required
+def help(request):
+	return render(request, 'help.html')
+
 
 

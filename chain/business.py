@@ -17,49 +17,60 @@ class HashCalculator():
         hash_dict = {}
 
         # Include hash for Election Config
-        queryset = ElectionConfig.objects.all()
-        cs_json_str = json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
+        queryset = list(ElectionConfig.objects.all().values())
+        cs_json_str = json.dumps(queryset, cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
-        hash_dict['election_config'] = m.hexdigest()
+        hash_dict["election_config"] = queryset
+        hash_dict["election_config_hash"] = m.hexdigest()
+        
 
         # Include hash for Candidates
-        queryset = Candidate.objects.all()
-        cs_json_str = json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
+        queryset = list(Candidate.objects.all().values())
+        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
-        hash_dict['candidates'] = m.hexdigest()
+        hash_dict["candidates"] = queryset
+        hash_dict["candidates_hash"] = m.hexdigest()
 
         # Include hash for Positions
-        queryset = Position.objects.all()
-        cs_json_str = json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
+        queryset = list(Position.objects.all().values())
+        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
-        hash_dict['positions'] = m.hexdigest()
+        hash_dict["positions"] = queryset
+        hash_dict["positions_hash"] = m.hexdigest()
 
         # Include hash for Electors
-        queryset = Position.objects.all()
-        cs_json_str = json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
+        queryset = list(Elector.objects.all().values())
+        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
-        hash_dict['electors'] = m.hexdigest()
+        hash_dict["electors"] = queryset
+        hash_dict["electors_hash"] = m.hexdigest()
 
         # Include hash for Users
-        queryset = User.objects.all()
-        cs_json_str = json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
+        queryset = list(User.objects.all().values('id', 'first_name', 'last_name', 'email', 'is_superuser'))
+        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
-        hash_dict['users'] = m.hexdigest()
+        hash_dict["users"] = queryset
+        hash_dict["users_hash"] = m.hexdigest()
 
-        return {'database':hash_dict}
+        d = {"database":hash_dict}
+
+        return json.dumps(d, cls=DjangoJSONEncoder)
 
     def __ignoreFile(self, filename):
-        if filename.startswith('.'):
-            return True
-        if filename.endswith('.pyc'):
-            # print(filename)
-            return True
-        return False
+        if filename.endswith('.py'):
+            return False
+        if filename.endswith('.js'):
+            return False
+        if filename.endswith('.css'):
+            return False
+        if filename.endswith('.html'):
+            return False
+        return True
 
     def sourceCodeHash(self):
         BUF_SIZE = 65536
@@ -78,7 +89,7 @@ class HashCalculator():
                                 m.update(data)
                         hash_dict[os.path.join(root, filename)] = m.hexdigest()
 
-        return {'souce_code':hash_dict}
+        return {"souce_code":hash_dict}
 
 class BBlockHandler():
 
@@ -123,7 +134,7 @@ class BBlockHandler():
         else:
             bblock.parent_hash = '0'.zfill(128)
         bblock.block_hash = bblock.calculateHash()
-        bblock.total_votes = cv_quantity
+        bblock.total_votes = last_block.total_votes + cv_quantity
         bblock.save()
         Voted.objects.filter(hash_val='x').update(hash_val=bblock.block_hash)
 

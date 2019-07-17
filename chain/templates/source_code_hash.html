@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item">Election</li>
+            <li class="breadcrumb-item">Block Chain</li>
+            <li class="breadcrumb-item active" aria-current="page">Source Code Hash</li>
+        </ol>
+    </nav>
+{% endblock breadcrumb %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        Block hash: {{bblock.block_hash}}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        Source code hash:<pre>{{bblock.source_code_hash | pprint}}</pre> 
+    </div>
+</div>
+{% endblock content %}

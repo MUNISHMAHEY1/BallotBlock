@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+      <li class="breadcrumb-item">About</li>
+      <li class="breadcrumb-item active" aria-current="page">Documentation</li>
+    </ol>
+</nav>
+{% endblock breadcrumb %}
+
+{% block content %}
+<style media="screen">
+    .breadcrumb{
+        background-color:#383636;
+        color:#ffffff;
+    }
+    .jumbotron{
+        /* background-color:#a46843; */
+        background-color:#383636;
+        color:#ffffff;
+    }
+
+</style>
+<div class="jumbotron">
+    <h1>Documentation</h1>
+</div>
+<div class="jumbotron" style="background-color:#ec4d37">
+
+<h2>Configuration</h2>
+<ul>
+  <li><h4>Description: The admin can give the description of the election as to tell what is the election being held for.</h4></li>
+  <li><h4>Start Time: The admin can set the start time of the election himself by going into Home/Election/Election Configuration.</h4></li>
+  <li><h4>End Time: The admin can also set the time when the election should end by navigationg to Home/Election/Election Configuration.</h4></li>
+  <li><h4>Block Time Generation: It is the time in minutes after which each block is generated. For Example:- 15, would mean that after first block of blockchain is generated it will wait for 15 minutes to generated the next block.</h4></li>
+  <li><h4>Guess Rate: This parameter was kept to make sure in every block there are enough different number of votes for different canidates. So, that the probability for a viewer of the block to guess which candidate got the highest votes is defined here. For example, if the the guess rate is 0.3, it means a new block will only be generated if the guess rate is less than or equal to 0.3. If a situation arrives that the guess rate if greater than given value but the time generation given is up than the block will be generated but the candidate list will not be shown so as the viewer of the block cannot guess who voted for who.</h4></li>
+  <li><h4>Minimum Votes in a Block:This is another parameter that will be checked to generate next block. A new block will be generated when on of the parameters from minimum number of votes and Block time generation is met. </h4></li>
+  <li><h4>Minimum votes in last block:This parameter make sure that the the last block of the block chain is not generated untill the election end. </h4></li>
+  <li><h4>Attentance Rate:This parameter gives us a rough idea of how many people are expected to vote and this also helps together with the "Minimum votes in last block" to generate the last block. </h4></li>
+</ul>
+</div>
+{% endblock content %}

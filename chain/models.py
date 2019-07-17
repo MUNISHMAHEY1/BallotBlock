@@ -40,7 +40,7 @@ class BBlock(models.Model):
 
      def calculateHashOfDatabaseHash(self):
           m = hashlib.sha512()
-          m.update(self.hash_of_database_hash.encode("utf-8"))
+          m.update(self.database_hash.encode("utf-8"))
           return m.hexdigest()
 
      def calculateHashOfSourceCodeHash(self):

@@ -28,4 +28,5 @@ urlpatterns = [
     path('chain/', include('chain.urls')),
     path('election/', include('election.urls')),
     path('vote/', include('vote.urls')),
+    path('documentation/', include('documentation.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
