@@ -10,15 +10,6 @@ from balletblock import settings
 from django.db import transaction
 import datetime
 
-import json
-
-class doubleQuoteDict(dict):
-    def __str__(self):
-        return json.dumps(self)
-
-    def __repr__(self):
-        return json.dumps(self)
-
 
 class HashCalculator():
 
@@ -26,49 +17,49 @@ class HashCalculator():
         hash_dict = {}
 
         # Include hash for Election Config
-        queryset = ElectionConfig.objects.all()
-        cs_json_str = json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
+        queryset = list(ElectionConfig.objects.all().values())
+        cs_json_str = json.dumps(queryset, cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
-        hash_dict["election_config"] = cs_json_str
+        hash_dict["election_config"] = queryset
         hash_dict["election_config_hash"] = m.hexdigest()
         
 
         # Include hash for Candidates
-        queryset = Candidate.objects.all()
-        cs_json_str = json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
+        queryset = list(Candidate.objects.all().values())
+        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
-        hash_dict["candidates"] = cs_json_str
+        hash_dict["candidates"] = queryset
         hash_dict["candidates_hash"] = m.hexdigest()
 
         # Include hash for Positions
-        queryset = Position.objects.all()
-        cs_json_str = json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
+        queryset = list(Position.objects.all().values())
+        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
-        hash_dict["positions"] = cs_json_str
+        hash_dict["positions"] = queryset
         hash_dict["positions_hash"] = m.hexdigest()
 
         # Include hash for Electors
-        queryset = Position.objects.all()
-        cs_json_str = json.dumps(list(queryset.values()), cls=DjangoJSONEncoder)
+        queryset = list(Elector.objects.all().values())
+        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
-        hash_dict["electors"] = cs_json_str
+        hash_dict["electors"] = queryset
         hash_dict["electors_hash"] = m.hexdigest()
 
         # Include hash for Users
-        queryset = User.objects.all()
-        cs_json_str = json.dumps(list(queryset.values('id', 'first_name', 'last_name', 'email')), cls=DjangoJSONEncoder)
+        queryset = list(User.objects.all().values('id', 'first_name', 'last_name', 'email', 'is_superuser'))
+        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
-        hash_dict["users"] = cs_json_str
+        hash_dict["users"] = queryset
         hash_dict["users_hash"] = m.hexdigest()
 
         d = {"database":hash_dict}
 
-        return doubleQuoteDict(d)
+        return json.dumps(d, cls=DjangoJSONEncoder)
 
     def __ignoreFile(self, filename):
         if filename.endswith('.py'):

@@ -29,8 +29,8 @@
     {% for bblock in bblock_list %}
         <div class="col-md-6">
             <div class="mb-3">
-                <div class="card text-white bg-success">
-                    <div class="card-header">Parent hash: {{bblock.parent_hash}}</div>
+                <div class="card">
+                    <div class="card-header text-white bg-secondary">Parent hash: {{bblock.parent_hash}}</div>
                     
                         <ul class="list-group text-white bg-success">
                             <li class="list-group-item text-white bg-success">
@@ -45,33 +45,28 @@
                                     {{bblock.hash_of_source_code_hash }}
                                 </a>
                             </li>
-                            <li class="list-group-item text-white bg-success">
+                            <li class="list-group-item text-white bg-info">
                                 <h6 class="card-subtitle">Election results:</h6>
                                 {{bblock.candidate_votes}}
                             </li>
-                            <li class="list-group-item text-white bg-success">
+                            <li class="list-group-item text-white bg-info">
                                 <h6 class="card-subtitle">Electors who voted:</h6>
                                 {{bblock.electors}}
                             </li>
-                            <li class="list-group-item text-white bg-success">
+                            <li class="list-group-item text-white bg-info">
                                 Total of votes: {{bblock.total_votes}}
                             </li>
-                            <li class="list-group-item text-white bg-success">
+                            <li class="list-group-item text-white bg-info">
                                 Block generated time: {{bblock.timestamp_iso}}
                             </li>
                         </ul>
                     
-                    <div class="card-footer">Block hash: {{bblock.block_hash}}</div>
+                    <div class="card-footer text-white bg-secondary">Block hash: {{bblock.block_hash}}</div>
                 </div>
             </div>
         </div>
     {% endfor %}
 </div>
-
-<hr></hr>
-    {% render_table bblock_table %}
-<hr></hr>
-
 <div class="row">
     <div class="col-md-4">
         <a href="{% url 'block_add' %}" class="btn btn-primary">Add Block</a>

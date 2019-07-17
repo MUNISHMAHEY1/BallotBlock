@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from chain.business import BBlockHandler
-from chain.tables import BBlockTable
 from chain.models import BBlock
 from django.core.serializers.json import DjangoJSONEncoder
 import json
@@ -9,8 +8,7 @@ from django.core import serializers
 
 def block_list(request, template_name='block_list.html'):
     bblock_list = BBlock.objects.all()
-    bblock_table = BBlockTable(BBlock.objects.all())
-    return render(request, template_name, {'bblock_list': bblock_list, 'bblock_table': bblock_table })
+    return render(request, template_name, {'bblock_list': bblock_list})
 
 def block_add(request):
     BBlockHandler().add()
