@@ -33,13 +33,21 @@
                     <div class="card-header text-white bg-secondary">Parent hash: {{bblock.parent_hash}}</div>
                     
                         <ul class="list-group text-white bg-success">
+                            {% if bblock.hash_of_database_hash == genesis_block.hash_of_database_hash %}
                             <li class="list-group-item text-white bg-success">
+                            {% else %}
+                            <li class="list-group-item text-white bg-danger">
+                            {% endif %}
                                 <h6 class="card-subtitle">Database hash:</h6>
                                 <a href="{% url 'database_hash' bblock_id=bblock.id %}" class="text-white" target="_blank">
-                                        {{bblock.hash_of_database_hash }}
+                                    {{bblock.hash_of_database_hash }}
                                 </a>
                             </li>
+                            {% if bblock.hash_of_source_code_hash == genesis_block.hash_of_source_code_hash %}
                             <li class="list-group-item text-white bg-success">
+                            {% else %}
+                            <li class="list-group-item text-white bg-danger">
+                            {% endif %}
                                 <h6 class="card-subtitle">Source code hash:</h6>
                                 <a href="{% url 'source_code_hash' bblock_id=bblock.id %}" class="text-white" target="_blank">
                                     {{bblock.hash_of_source_code_hash }}

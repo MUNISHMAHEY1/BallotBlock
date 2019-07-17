@@ -8,7 +8,10 @@ from django.core import serializers
 
 def block_list(request, template_name='block_list.html'):
     bblock_list = BBlock.objects.all()
-    return render(request, template_name, {'bblock_list': bblock_list})
+    genesis_block = None
+    if BBlock.objects.all().count() > 0:
+        genesis_block = BBlock.objects.filter(parent_hash='0'.zfill(128))[0]
+    return render(request, template_name, {'bblock_list': bblock_list, 'genesis_block': genesis_block})
 
 def block_add(request):
     BBlockHandler().add()
@@ -16,9 +19,11 @@ def block_add(request):
 
 def database_hash(request, bblock_id, template_name='database_hash.html'):
     bblock = BBlock.objects.get(id=int(bblock_id))
-    #database_hash_dict = json.loads(bblock.database_hash, cls=DjangoJSONEncoder)
     database_hash_dict = json.loads(bblock.database_hash)
-    return render(request, template_name, {'bblock': bblock, 'database_hash_dict': database_hash_dict})
+    genesis_block = BBlock.objects.filter(parent_hash='0'.zfill(128))[0]
+    genesis_database_hash_dict = json.loads(genesis_block.database_hash)
+    return render(request, template_name, {'bblock': bblock, 'genesis_block': genesis_block,
+             'database_hash_dict': database_hash_dict, 'genesis_database_hash_dict': genesis_database_hash_dict})
 
 def source_code_hash(request, bblock_id, template_name='source_code_hash.html'):
     bblock = BBlock.objects.get(id=int(bblock_id))
