@@ -13,6 +13,7 @@
   border: none;
   color: #FFFFFF;
   text-align: center;
+  align:center;
   font-size: 28px;
   padding: 20px;
   width: 300px;
@@ -48,15 +49,52 @@
 a{
     color: #FFFFFF;
 }
+.jump{
+    text-align:center;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 5px;
+}
+
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
 </style>
+<div class="overlay">
+
+
 {% if request.user.is_superuser %}
 <div class="jumbotron">
     <h1 class="jump text-center">“The ballot is stronger than the bullet.” – Abraham Lincoln </h1>
 </div>
 {% else %}
-<div class="jumbotron">
+<div class="jumbotron jumbotron-fluid">
     <h1 class="jump text-center">“The ballot is stronger than the bullet.” – Abraham Lincoln </h1>
 </div>
-<button class="button"><span><a href="{% url 'vote' %}">VOTE HERE </a></span></button>
+<div class="jump"">
+    <button class="button"><span><a href="{% url 'vote' %}">VOTE HERE </a></span></button><br><br><br>
+</div>
+</div>
+<div class="row">
+  <div class="column">
+    <img src="{% static "images/main.jpg"%}" alt="Image not found" style="width:100%">
+  </div>
+  <div class="column">
+    <img src="{% static "images/voted.jpg"%}" alt="Image not found" style="width:100%">
+  </div>
+  <div class="column">
+    <img src="{% static "images/main.jpg"%}" alt="Image not found" style="width:100%">
+  </div>
+</div>
+
 {% endif %}
 {% endblock content %}
