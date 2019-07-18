@@ -27,7 +27,11 @@
             <div class="card text-white bg-success">
                 <div class="card-header">Parent hash: {{bblock.parent_hash}}</div>
                     <ul class="list-group text-white bg-success">
-                        <li class="list-group-item text-white bg-success">
+                        {% if bblock.hash_of_database_hash == genesis_block.database.candidates_hash %}
+                        <li class="list-group-item text-white bg-success hash">
+                        {% else %}
+                        <li class="list-group-item text-white bg-danger hash">
+                        {% endif %}
                             <h6 class="card-subtitle">Database hash:</h6>
                             {{bblock.hash_of_database_hash }}
                         </li>
@@ -41,21 +45,14 @@
 <!-- Tabs -->
 <ul class="nav nav-tabs">
     <li class="nav-item">
-      <a class="nav-link active" data-toggle="tab" href="#raw_data">Raw data</a>
+        <a class="nav-link active" data-toggle="tab" href="#beautiful_data">Beautiful data</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-toggle="tab" href="#beautiful_data">Beautiful data</a>
+        <a class="nav-link" data-toggle="tab" href="#raw_data">Raw data</a>
     </li>
 </ul>
 <div id="myTabContent" class="tab-content">
-    <div class="tab-pane fade show active" id="raw_data">
-        <div class="row">
-            <div class="col-md-12">
-                Database hash:<pre>{{bblock.database_hash | pprint}}</pre> 
-            </div>
-        </div>
-    </div>
-    <div class="tab-pane fade" id="beautiful_data">
+    <div class="tab-pane fade show active" id="beautiful_data">
         <!-- Election config table -->
         <div class="row">
             <div class="col-md-12">
@@ -88,7 +85,11 @@
                     {% endfor %}
                     </tbody>
                     <tfoot>
-                        <tr class="table-info">
+                        {% if genesis_database_hash_dict.election_config_hash == database_hash_dict.election_config_hash %}
+                        <tr class="table-success hash">
+                        {% else %}
+                        <tr class="table-danger hash">
+                        {% endif %}
                             <td colspan="9">{{database_hash_dict.database.election_config_hash}}</td>
                         </tr>
                     </tfoot>
@@ -115,7 +116,11 @@
                     {% endfor %}
                     </tbody>
                     <tfoot>
-                        <tr class="table-info">
+                        {% if genesis_database_hash_dict.positions_hash == database_hash_dict.positions_hash %}
+                        <tr class="table-success hash">
+                        {% else %}
+                        <tr class="table-danger hash">
+                        {% endif %}
                             <td colspan="3">{{database_hash_dict.database.positions_hash}}</td>
                         </tr>
                     </tfoot>
@@ -142,7 +147,11 @@
                     {% endfor %}
                     </tbody>
                     <tfoot>
-                        <tr class="table-info">
+                        {% if genesis_database_hash_dict..database.candidates_hash == database_hash_dict.database.candidates_hash %}
+                        <tr class="table-success hash">
+                        {% else %}
+                        <tr class="table-danger hash">
+                        {% endif %}
                             <td colspan="3">{{database_hash_dict.database.candidates_hash}}</td>
                         </tr>
                     </tfoot>
@@ -167,7 +176,11 @@
                     {% endfor %}
                     </tbody>
                     <tfoot>
-                        <tr class="table-info">
+                        {% if genesis_database_hash_dict.electors_hash == database_hash_dict.electors_hash %}
+                        <tr class="table-success hash">
+                        {% else %}
+                        <tr class="table-danger hash">
+                        {% endif %}
                             <td colspan="3">{{database_hash_dict.database.electors_hash}}</td>
                         </tr>
                     </tfoot>
@@ -198,11 +211,24 @@
                     {% endfor %}
                     </tbody>
                     <tfoot>
-                        <tr class="table-info">
+                        {% if genesis_database_hash_dict.users_hash == database_hash_dict.users_hash %}
+                        <tr class="table-success hash">
+                        {% else %}
+                        <tr class="table-danger hash">
+                        {% endif %}
                             <td colspan="5">{{database_hash_dict.database.users_hash}}</td>
                         </tr>
                     </tfoot>
                 </table>
+            </div>
+        </div>
+    <!-- End of beautiful tab content -->
+    </div>
+    <!-- Raw tab content -->
+    <div class="tab-pane fade" id="raw_data">
+        <div class="row">
+            <div class="col-md-12">
+                {{bblock.database_hash}}
             </div>
         </div>
     </div>
