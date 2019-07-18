@@ -6,7 +6,57 @@
         background-color:#383636;
         color:#ffffff;
     }
+
+    .button {
+  border-radius: 4px;
+  background-color: #f4511e;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 28px;
+  padding: 20px;
+  width: 300px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 25px;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+a{
+    color: #FFFFFF;
+}
 </style>
-    <div class="jumbotron">
-        <h1 class="jump text-center">“The ballot is stronger than the bullet.” – Abraham Lincoln </h1>
+{% if request.user.is_superuser %}
+<div class="jumbotron">
+    <h1 class="jump text-center">“The ballot is stronger than the bullet.” – Abraham Lincoln </h1>
+</div>
+{% else %}
+<div class="jumbotron">
+    <h1 class="jump text-center">“The ballot is stronger than the bullet.” – Abraham Lincoln </h1>
+</div>
+<button class="button"><span><a href="{% url 'vote' %}">VOTE HERE </a></span></button>
+{% endif %}
 {% endblock content %}
