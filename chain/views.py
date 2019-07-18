@@ -27,5 +27,14 @@ def database_hash(request, bblock_id, template_name='database_hash.html'):
 
 def source_code_hash(request, bblock_id, template_name='source_code_hash.html'):
     bblock = BBlock.objects.get(id=int(bblock_id))
-    return render(request, template_name, {'bblock': bblock})
+    source_code_hash_dict = json.loads(bblock.source_code_hash)
+    genesis_block = BBlock.objects.filter(parent_hash='0'.zfill(128))[0]
+    diff_files = []
+    if bblock.source_code_hash != genesis_block.source_code_hash:
+        genesis_source_code_hash_dict = json.loads(genesis_block.source_code_hash)
+        for f in source_code_hash_dict['source_code']:
+            if f not in genesis_source_code_hash_dict['source_code']:
+                diff_files.append(f['file'])
+    return render(request, template_name, {'bblock': bblock, 'genesis_block': genesis_block,
+             'source_code_hash_dict': source_code_hash_dict, 'diff_files':diff_files })
 
