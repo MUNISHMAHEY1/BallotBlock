@@ -9,7 +9,7 @@ import os
 from balletblock import settings
 from django.db import transaction
 import datetime
-
+import ast
 
 class HashCalculator():
 
@@ -97,8 +97,13 @@ class BBlockHandler():
     def add(self):
 
         if BBlock.objects.all().count() == 0:
-            raise Exception('It is not possible to add a block without genesis block')
-            
+            obj=BBlockHandler()
+            obj.add_genesis()
+            print ("Genysis block")
+            # raise Exception('It is not possible to add a block without genesis block')
+        
+        total_blocks=list(BBlock.objects.all().order_by('-timestamp_iso'))
+        total_blocks=len(total_blocks)
         last_block = BBlock.objects.all().order_by('-timestamp_iso')[0]
 
         hc = HashCalculator()
@@ -112,15 +117,26 @@ class BBlockHandler():
         
         bblock.timestamp_iso = datetime.datetime.now().isoformat()
         
-
+       
         same_qtt_votes = False
         cv_quantity = 0
         while not same_qtt_votes:
             # Workaround to lock electors who will be locked.
             Voted.objects.filter(hash_val__isnull=True).update(hash_val='x')
-            electors = list(Voted.objects.filter(hash_val='x').values())
+            # electors = list(Voted.objects.filter(hash_val='x').values())
+            electors = list(Voted.objects.all().values())
+            print("electors=",electors)
+            no_electors=len(electors) #electors in new block
+            print ("No of electors=",no_electors)
+            
             candidate_votes = list(CandidateVote.objects.filter().values())
-            cv_quantity = self.__count_votes(candidate_votes)
+            cv_quantity = self.__count_votes(candidate_votes) #votes in new block
+            print("No of Votes=",cv_quantity)
+            if total_blocks>1: # for block genysis  there is no need for parameters to be checked
+                print("HAHAHA")
+                bb=BBlockHandler()
+                guess_rate_value=bb.guess_rate(cv_quantity,no_electors)
+
             if last_block:
                 cv_quantity = cv_quantity - last_block.total_votes
             if cv_quantity == (len(electors) * Position.objects.count()):
@@ -147,7 +163,6 @@ class BBlockHandler():
     @transaction.atomic
     def add_genesis(self):
         hc = HashCalculator()
-
         #bblock = BBlock.objects.create()
         bblock = BBlock()
         bblock.database_hash = str(hc.databaseHash())
@@ -161,3 +176,20 @@ class BBlockHandler():
         bblock.block_hash = bblock.calculateHash()
         bblock.parent_hash = '0'.zfill(128)
         bblock.save()
+        print("End")
+    
+    @transaction.atomic
+    def guess_rate(self,votes_new_block, elector_qty):
+        #Highest No of votes -> new block votes - old block votes / no of voters 
+        last_block = ast.literal_eval(BBlock.objects.all().order_by('-timestamp_iso')[0].candidate_votes) #ast.literal converts string to list or dictionary easily
+        old_block_votes=0
+        for i in last_block:
+            old_block_votes+=i['quantity']
+        print("Old_block_values=",old_block_votes)
+        print("votes_new_block=",votes_new_block)
+        guess_rate_val=(int(votes_new_block)-int(old_block_votes))/int(elector_qty)
+        print("Gues val rate=",guess_rate_val)
+        return (guess_rate_val)
+    
+    @transaction.atomic
+    def attendance_rate(self,votes_new_block, elector_qty):
