@@ -136,6 +136,7 @@ class BBlockHandler():
         return False
     
     def checkGuessRate(self, bblock):
+        #TODO: Implement guess rate validation
         return False
 
     def shouldIncludeElectors(self, bblock):
@@ -161,13 +162,17 @@ class BBlockHandler():
         bblock.hash_of_source_code_hash = bblock.calculateHashOfSourceCodeHash()
         
         bblock.timestamp_iso = datetime.datetime.now().isoformat()
-
         same_qtt_votes = False
         cv_quantity = 0
         while not same_qtt_votes:
             # Workaround to lock electors who will be locked.
             Voted.objects.filter(hash_val__isnull=True).update(hash_val='x')
-            electors = list(Voted.objects.filter(hash_val='x').values())
+            # electors = list(Voted.objects.filter(hash_val='x').values())
+            electors = list(Voted.objects.all().values())
+            print("electors=",electors)
+            no_electors=len(electors) #electors in new block
+            print ("No of electors=",no_electors)
+            
             candidate_votes = list(CandidateVote.objects.filter().values())
             cv_quantity = self.__count_votes(candidate_votes)
             cv_quantity = cv_quantity - previous_block.total_votes
@@ -202,7 +207,6 @@ class BBlockHandler():
     @transaction.atomic
     def add_genesis(self):
         hc = HashCalculator()
-
         #bblock = BBlock.objects.create()
         bblock = BBlock()
         bblock.database_hash = str(hc.databaseHash())
@@ -216,3 +220,20 @@ class BBlockHandler():
         bblock.block_hash = bblock.calculateHash()
         bblock.parent_hash = '0'.zfill(128)
         bblock.save()
+        print("End")
+    
+    @transaction.atomic
+    def guess_rate(self,votes_new_block, elector_qty):
+        #Highest No of votes -> new block votes - old block votes / no of voters 
+        last_block = ast.literal_eval(BBlock.objects.all().order_by('-timestamp_iso')[0].candidate_votes) #ast.literal converts string to list or dictionary easily
+        old_block_votes=0
+        for i in last_block:
+            old_block_votes+=i['quantity']
+        print("Old_block_values=",old_block_votes)
+        print("votes_new_block=",votes_new_block)
+        guess_rate_val=(int(votes_new_block)-int(old_block_votes))/int(elector_qty)
+        print("Gues val rate=",guess_rate_val)
+        return (guess_rate_val)
+    
+    # @transaction.atomic
+    # def attendance_rate(self,votes_new_block, elector_qty):
