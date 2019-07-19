@@ -115,6 +115,8 @@ class BBlockHandler():
             ec = ElectionBusiness().getCurrentElectionConfig()
             if not ec.isOccurring():
                 return True
+            if Voted.objects.count() == Elector.objects.count():
+                return True
         return False
     
     def isLastBlock(self):
@@ -156,9 +158,9 @@ class BBlockHandler():
 
         #bblock = BBlock.objects.create()
         bblock = BBlock()
-        bblock.database_hash = str(hc.databaseHash())
+        bblock.database_hash = hc.databaseHash()
         bblock.hash_of_database_hash = bblock.calculateHashOfDatabaseHash()
-        bblock.source_code_hash = str(hc.sourceCodeHash())
+        bblock.source_code_hash = hc.sourceCodeHash()
         bblock.hash_of_source_code_hash = bblock.calculateHashOfSourceCodeHash()
         
         bblock.timestamp_iso = datetime.datetime.now().isoformat()
@@ -169,9 +171,7 @@ class BBlockHandler():
             Voted.objects.filter(hash_val__isnull=True).update(hash_val='x')
             # electors = list(Voted.objects.filter(hash_val='x').values())
             electors = list(Voted.objects.all().values())
-            print("electors=",electors)
             no_electors=len(electors) #electors in new block
-            print ("No of electors=",no_electors)
             
             candidate_votes = list(CandidateVote.objects.filter().values())
             cv_quantity = self.__count_votes(candidate_votes)
@@ -188,6 +188,9 @@ class BBlockHandler():
 
     @transaction.atomic
     def add(self):
+        if not self.shouldAddBlock():
+            return
+
         bblock = self.prepareBBlock()
         ret = self.shouldIncludeElectors(bblock)
         if not ret[0]:
@@ -209,9 +212,9 @@ class BBlockHandler():
         hc = HashCalculator()
         #bblock = BBlock.objects.create()
         bblock = BBlock()
-        bblock.database_hash = str(hc.databaseHash())
+        bblock.database_hash = hc.databaseHash()
         bblock.hash_of_database_hash = bblock.calculateHashOfDatabaseHash()
-        bblock.source_code_hash = str(hc.sourceCodeHash())
+        bblock.source_code_hash = hc.sourceCodeHash()
         bblock.hash_of_source_code_hash = bblock.calculateHashOfSourceCodeHash()
         bblock.electors = json.dumps(list(Voted.objects.all().values()), cls=DjangoJSONEncoder)
         bblock.candidate_votes = json.dumps(list(CandidateVote.objects.all().values()), cls=DjangoJSONEncoder)
@@ -220,8 +223,7 @@ class BBlockHandler():
         bblock.block_hash = bblock.calculateHash()
         bblock.parent_hash = '0'.zfill(128)
         bblock.save()
-        print("End")
-    
+   
     @transaction.atomic
     def guess_rate(self,votes_new_block, elector_qty):
         #Highest No of votes -> new block votes - old block votes / no of voters 
