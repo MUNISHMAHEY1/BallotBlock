@@ -191,5 +191,5 @@ class BBlockHandler():
         print("Gues val rate=",guess_rate_val)
         return (guess_rate_val)
     
-    @transaction.atomic
-    def attendance_rate(self,votes_new_block, elector_qty):
+    # @transaction.atomic
+    # def attendance_rate(self,votes_new_block, elector_qty):
