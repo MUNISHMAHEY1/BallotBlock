@@ -7,8 +7,9 @@ import hashlib
 import json
 import os
 from balletblock import settings
-from django.db import transaction
+from django.db import transaction, DatabaseError
 import datetime
+from election.business import ElectionBusiness
 
 
 class HashCalculator():
@@ -95,13 +96,60 @@ class HashCalculator():
 
 class BBlockHandler():
 
-    @transaction.atomic
-    def add(self):
+    def shouldAddBlock(self):
+        eb = ElectionBusiness()
+        # While election is occurring, new blocks should be generated.
+        if eb.isOccurring():
+            return True
+        ec = ElectionBusiness().getCurrentElectionConfig()
+        if not ec:
+            raise DatabaseError('There is not Election Configuration for the current election')
+        # Independently of election is occurring, if we have votes, a new block must be generated.
+        if Voted.objects.filter(hash_val__isnull=True).count() > 0 or Voted.objects.filter(hash_val='x').count() > 0:
+            return True
+        # If election ended and we do not have votes we do not need to generate a block.
+        return False
+    
+    def shouldAddLastBlock(self):
+        if self.isLastBlock():
+            ec = ElectionBusiness().getCurrentElectionConfig()
+            if not ec.isOccurring():
+                return True
+        return False
+    
+    def isLastBlock(self):
+        if self.shouldAddBlock():
+            ec = ElectionBusiness().getCurrentElectionConfig()
+            if (Voted.objects.count()-ec.min_votes_in_last_block)/Elector.objects.count() > ec.attendance_rate:
+                return True
+        return False
+    
+    def checkMinVotes(self, bblock):
+        ec = ElectionBusiness().getCurrentElectionConfig()
+        if self.shouldAddBlock():
+            electors = json.loads(bblock.electors)
+            if self.isLastBlock():
+                if self.shouldAddLastBlock():
+                    return True
+            if len(electors) >= ec.min_votes_in_block:
+                return True
+        return False
+    
+    def checkGuessRate(self, bblock):
+        return False
 
+    def shouldIncludeElectors(self, bblock):
+        if not self.checkMinVotes(bblock):
+            return (False, 'Number of electors rule is not attended.')
+        if not self.checkGuessRate(self, bblock):
+            return (False, 'Guess rate rule is not attended.')
+        return (True, '')
+
+    def prepareBBlock(self):
         if BBlock.objects.all().count() == 0:
-            raise Exception('It is not possible to add a block without genesis block')
+            raise DatabaseError('It is not possible to add a block without genesis block')
             
-        last_block = BBlock.objects.all().order_by('-timestamp_iso')[0]
+        previous_block = BBlock.objects.all().order_by('-timestamp_iso')[0]
 
         hc = HashCalculator()
 
@@ -113,7 +161,6 @@ class BBlockHandler():
         bblock.hash_of_source_code_hash = bblock.calculateHashOfSourceCodeHash()
         
         bblock.timestamp_iso = datetime.datetime.now().isoformat()
-        
 
         same_qtt_votes = False
         cv_quantity = 0
@@ -123,22 +170,28 @@ class BBlockHandler():
             electors = list(Voted.objects.filter(hash_val='x').values())
             candidate_votes = list(CandidateVote.objects.filter().values())
             cv_quantity = self.__count_votes(candidate_votes)
-            if last_block:
-                cv_quantity = cv_quantity - last_block.total_votes
+            cv_quantity = cv_quantity - previous_block.total_votes
             if cv_quantity == (len(electors) * Position.objects.count()):
                 same_qtt_votes = True
 
-        bblock.candidate_votes = str(candidate_votes)
-        bblock.electors = str(electors)
-        
-        if last_block:        
-            bblock.parent_hash = last_block.block_hash
-        else:
-            bblock.parent_hash = '0'.zfill(128)
+        bblock.candidate_votes = json.dumps(candidate_votes, cls=DjangoJSONEncoder)
+        bblock.electors = json.dumps(electors, cls=DjangoJSONEncoder)
+        bblock.parent_hash = previous_block.block_hash
+        bblock.total_votes = previous_block.total_votes + cv_quantity
+
+        return bblock
+
+    @transaction.atomic
+    def add(self):
+        bblock = self.prepareBBlock()
+        ret = self.shouldIncludeElectors(bblock)
+        if not ret[0]:
+            bblock.electors = json.dumps([], cls=DjangoJSONEncoder)
+            bblock.reason = ret[1]
+
         bblock.block_hash = bblock.calculateHash()
-        bblock.total_votes = last_block.total_votes + cv_quantity
-        bblock.save()
         Voted.objects.filter(hash_val='x').update(hash_val=bblock.block_hash)
+        bblock.save()
 
     def __count_votes(self, candidate_votes):
         cv_quantity = 0
@@ -156,8 +209,8 @@ class BBlockHandler():
         bblock.hash_of_database_hash = bblock.calculateHashOfDatabaseHash()
         bblock.source_code_hash = str(hc.sourceCodeHash())
         bblock.hash_of_source_code_hash = bblock.calculateHashOfSourceCodeHash()
-        bblock.electors = str(list(Voted.objects.all().values()))
-        bblock.candidate_votes = str(list(CandidateVote.objects.all().values()))
+        bblock.electors = json.dumps(list(Voted.objects.all().values()), cls=DjangoJSONEncoder)
+        bblock.candidate_votes = json.dumps(list(CandidateVote.objects.all().values()), cls=DjangoJSONEncoder)
         bblock.timestamp_iso = datetime.datetime.now().isoformat()
         bblock.total_votes = 0
         bblock.block_hash = bblock.calculateHash()
