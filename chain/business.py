@@ -74,7 +74,7 @@ class HashCalculator():
 
     def sourceCodeHash(self):
         BUF_SIZE = 65536
-        hash_dict = {}
+        source_list = []
 
         for root, dirs, files in os.walk(settings.BASE_DIR):
             for filename in files:
@@ -87,9 +87,11 @@ class HashCalculator():
                                 if not data:
                                     break
                                 m.update(data)
-                        hash_dict[os.path.join(root, filename)] = m.hexdigest()
+                        source_list.append({"file": os.path.join(root, filename), "file_hash": m.hexdigest()})
+        
+        d = {"source_code": source_list} 
 
-        return {"souce_code":hash_dict}
+        return json.dumps(d, cls=DjangoJSONEncoder)
 
 class BBlockHandler():
 

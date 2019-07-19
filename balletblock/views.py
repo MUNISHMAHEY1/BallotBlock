@@ -22,7 +22,8 @@ def home(request):
 		#return render(request, 'home.html', context)
 		return render(request, 'home.html')
 	else:
-		return redirect('vote')
+		# return redirect('vote')
+		return render(request, 'home.html')
 		#return render(request, 'vote.html', context)
 
 @login_required
@@ -32,6 +33,3 @@ def about_us(request):
 @login_required
 def help(request):
 	return render(request, 'help.html')
-
-
-

@@ -25,9 +25,9 @@
         color:#ffffff;
     }
 </style>
-<div class="row">
-    {% for bblock in bblock_list %}
-        <div class="col-md-6">
+{% for bblock in bblock_list %}
+    <div class="row">
+        <div class="col-md-12">
             <div class="mb-3">
                 <div class="card">
                     <div class="card-header text-white bg-secondary">Parent hash: {{bblock.parent_hash}}</div>
@@ -73,8 +73,9 @@
                 </div>
             </div>
         </div>
-    {% endfor %}
-</div>
+    </div>
+{% endfor %}
+
 <div class="row">
     <div class="col-md-4">
         <a href="{% url 'block_add' %}" class="btn btn-primary">Add Block</a>
