@@ -24,9 +24,24 @@
     }
 
 </style>
+
 <div class="jumbotron text-center">
     <h1>Documentation</h1>
 </div>
+
+<div class="container">
+    <h1><u>Table of Contents</u></h1>
+    <ol>
+        <h2><li><a href="https://gitlab.com/fabio.ribeiro.santiago/balletblock/wikis/INTRODUCTION">Introduction</a></li></h2>
+        <h2><li><a href="https://gitlab.com/fabio.ribeiro.santiago/balletblock/wikis/INSTALLATION">Installation Process</a></li></h2>
+        <h2><li><a href="https://gitlab.com/fabio.ribeiro.santiago/balletblock/wikis/CONFIGURATIONS-OF-THE-PROJECT">Configurations</a></li></h2>
+        <h2><li><a href="https://gitlab.com/fabio.ribeiro.santiago/balletblock/wikis/View-For-the-Admin-(WHEN-ELECTION-IS-NOT-OCCURRING)">Admin View</a></li></h2>
+    </ol>
+</div>
+
+
+
+
 <div class="jumbotron" style="background-color:#ec4d37">
 
 <h2><u>CONFIGURATIONS</u></h2><br>
@@ -35,7 +50,7 @@
   <br>
   <li><h4>Start Time: The admin can set the start time of the election himself by going into Home/Election/Election Configuration.</h4></li>
   <br>
-  <li><h4>End Time: The admin can also set the time when the election should end by navigationg to Home/Election/Election Configuration.</h4></li>
+  <li><h4>End Time: The admin can also set the time when the election should end by navigation to Home/Election/Election Configuration.</h4></li>
   <br>
   <li><h4>Block Time Generation: It is the time in minutes after which each block is generated. For Example:- 15, would mean that after first block of blockchain is generated it will wait for 15 minutes to generated the next block.</h4></li>
   <br>
@@ -43,15 +58,15 @@
   <br>
   <li><h4>Minimum Votes in a Block:This is another parameter that will be checked to generate next block. A new block will be generated when on of the parameters from minimum number of votes and Block time generation is met. </h4></li>
   <br>
-  <li><h4>Minimum votes in last block:This parameter make sure that the the last block of the block chain is not generated untill the election end. </h4></li>
+  <li><h4>Minimum votes in last block:This parameter make sure that the the last block of the block chain is not generated until the election end. </h4></li>
   <br>
-  <li><h4>Attentance Rate:This parameter gives us a rough idea of how many people are expected to vote and this also helps together with the "Minimum votes in last block" to generate the last block. </h4></li>
+  <li><h4>Attendance Rate:This parameter gives us a rough idea of how many people are expected to vote and this also helps together with the "Minimum votes in last block" to generate the last block. </h4></li>
 </ul>
 </div>
 
 <div class="jumbotron">
     <h2><u>FOR ADMIN</u></h2><br>
-    <h3><u>WHEN ELECTION IS OCCURING</u></h3><br>
+    <h3><u>WHEN ELECTION IS OCCURRING</u></h3><br>
     <ul>
         <li><h4>Block Chain:This shows all the current blocks generated.This is available under Election/Block Chain</h4></li><br>
         <li><h4>Configuration:The configurations set for the on going election cane be seen but cannot be changed when the election is occuring.This is available under Election/Configurations</h4></li><br>
@@ -63,17 +78,17 @@
     </ul>
     <h3><u>WHEN ELECTION IS NOT OCCURING</u></h3><br>
     <ul>
-        <li><h4>Bloak Chain:This will not show anything as the election is not occuring right now.This is available under Election/Block Chain</h4></li><br>
+        <li><h4>Block Chain:This will not show anything as the election is not occurring right now.This is available under Election/Block Chain</h4></li><br>
         <li><h4>Configuration:The admin can set the configurations for the next election he or she wants to conduct.This is available under Election/Configurations.</h4></li><br>
         <li><h4>Start Election:After the configuration is set, the election cane be started manually from here. If it is not started manually then it will start automatically when the start time is reached.This is available under Election/Start Election</h4></li><br>
         <li><h4>Results:After the election is done the result for the last election can be checked from here and the winners can be decided accordingly. This is available under Election/Results</h4></li><br>
         <li><h4>Clean:This function cleans up the record for the previous election.This is available under Election/Clean.</h4></li><br>
-        <li><h4>Mock Election:This is provided to generated dummy electors,candidayes and positions to test for a dummy election. This is available under Election/Mock Election</h4></li><br>
+        <li><h4>Mock Election:This is provided to generated dummy electors,candidates and positions to test for a dummy election. This is available under Election/Mock Election</h4></li><br>
         <li><h4>Electors:This is the list of users that are registered with the ballot are are allowed to cast their vote.</h4></li><br>
         <li><h4>Candidates:This is the list of candidates standing for a position in the election.</h4></li><br>
         <li><h4>Position:This is the list of positions available for the candidates to stand for.</h4></li><br>
         <li><h4>Development Team:This hold the information of who has worked on this project.This can be found under About/Development Team</h4></li><br>
-        <li><h4>Documentation:This is a document that can be refered if there is any problem at any point.This can be found under About/Documentation</h4></li>
+        <li><h4>Documentation:This is a document that can be referred if there is any problem at any point.This can be found under About/Documentation</h4></li>
     </ul>
 </div>
 
