@@ -139,11 +139,8 @@ class BBlockHandler():
                 return True
         return False
     
-    #def checkGuessRate(self, bblock):
-        #TODO: Implement guess rate validation
-    #    return False
-        
     def checkGuessRate(self,votes_new_block, elector_qty):
+        #TODO: Implement guess rate validation - Is this working ?
         #Highest No of votes -> new block votes - old block votes / no of voters 
         last_block = ast.literal_eval(BBlock.objects.all().order_by('-timestamp_iso')[0].candidate_votes) #ast.literal converts string to list or dictionary easily
         old_block_votes=0
@@ -230,19 +227,3 @@ class BBlockHandler():
         bblock.parent_hash = '0'.zfill(128)
         bblock.reason=''
         bblock.save()
-   
-    @transaction.atomic
-    def guess_rate(self,votes_new_block, elector_qty):
-        #Highest No of votes -> new block votes - old block votes / no of voters 
-        last_block = ast.literal_eval(BBlock.objects.all().order_by('-timestamp_iso')[0].candidate_votes) #ast.literal converts string to list or dictionary easily
-        old_block_votes=0
-        for i in last_block:
-            old_block_votes+=i['quantity']
-        print("Old_block_values=",old_block_votes)
-        print("votes_new_block=",votes_new_block)
-        guess_rate_val=(int(votes_new_block)-int(old_block_votes))/int(elector_qty)
-        print("Gues val rate=",guess_rate_val)
-        return (guess_rate_val)
-    
-    # @transaction.atomic
-    # def attendance_rate(self,votes_new_block, elector_qty):
