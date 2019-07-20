@@ -18,7 +18,9 @@ class HashCalculator():
         hash_dict = {}
 
         # Include hash for Election Config
-        queryset = list(ElectionConfig.objects.all().values())
+        queryset = list(ElectionConfig.objects.all().values('id', 'description', 'start_time', 'end_time', 
+                        'block_time_generation', 'guess_rate', 'min_votes_in_block', 'min_votes_in_last_block',
+                        'attendance_rate', 'locked').order_by('id'))
         cs_json_str = json.dumps(queryset, cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
@@ -27,32 +29,32 @@ class HashCalculator():
         
 
         # Include hash for Candidates
-        queryset = list(Candidate.objects.all().values())
-        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
+        queryset = list(Candidate.objects.all().values('id', 'name', 'position_id').order_by('id'))
+        cs_json_str = json.dumps(queryset, cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
         hash_dict["candidates"] = queryset
         hash_dict["candidates_hash"] = m.hexdigest()
 
         # Include hash for Positions
-        queryset = list(Position.objects.all().values())
-        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
+        queryset = list(Position.objects.all().values('id', 'description', 'quantity').order_by('id'))
+        cs_json_str = json.dumps(queryset, cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
         hash_dict["positions"] = queryset
         hash_dict["positions_hash"] = m.hexdigest()
 
         # Include hash for Electors
-        queryset = list(Elector.objects.all().values())
-        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
+        queryset = list(Elector.objects.all().values('id', 'user_id').order_by('id'))
+        cs_json_str = json.dumps(queryset, cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
         hash_dict["electors"] = queryset
         hash_dict["electors_hash"] = m.hexdigest()
 
         # Include hash for Users
-        queryset = list(User.objects.all().values('id', 'first_name', 'last_name', 'email', 'is_superuser'))
-        cs_json_str = json.dumps(str(queryset), cls=DjangoJSONEncoder)
+        queryset = list(User.objects.all().values('id', 'first_name', 'last_name', 'email', 'is_superuser').order_by('id'))
+        cs_json_str = json.dumps(queryset, cls=DjangoJSONEncoder)
         m = hashlib.sha512()
         m.update(cs_json_str.encode("utf-8"))
         hash_dict["users"] = queryset
@@ -133,7 +135,7 @@ class BBlockHandler():
             if self.isLastBlock():
                 if self.shouldAddLastBlock():
                     return True
-            if len(electors) >= ec.min_votes_in_block:
+            if (len(electors) * Position.objects.count()) >= ec.min_votes_in_block:
                 return True
         return False
     
@@ -144,11 +146,16 @@ class BBlockHandler():
     def shouldIncludeElectors(self, bblock):
         if not self.checkMinVotes(bblock):
             return (False, 'Number of electors rule is not attended.')
-        if not self.checkGuessRate(self, bblock):
-            return (False, 'Guess rate rule is not attended.')
+        #if not self.checkGuessRate(bblock):
+        #    return (False, 'Guess rate rule is not attended.')
         return (True, '')
 
-    def prepareBBlock(self):
+
+    @transaction.atomic
+    def add(self):
+        if not self.shouldAddBlock():
+            return
+
         if BBlock.objects.all().count() == 0:
             raise DatabaseError('It is not possible to add a block without genesis block')
             
@@ -169,10 +176,7 @@ class BBlockHandler():
         while not same_qtt_votes:
             # Workaround to lock electors who will be locked.
             Voted.objects.filter(hash_val__isnull=True).update(hash_val='x')
-            # electors = list(Voted.objects.filter(hash_val='x').values())
-            electors = list(Voted.objects.all().values())
-            no_electors=len(electors) #electors in new block
-            
+            electors = list(Voted.objects.filter(hash_val='x').values())
             candidate_votes = list(CandidateVote.objects.filter().values())
             cv_quantity = self.__count_votes(candidate_votes)
             cv_quantity = cv_quantity - previous_block.total_votes
@@ -184,18 +188,11 @@ class BBlockHandler():
         bblock.parent_hash = previous_block.block_hash
         bblock.total_votes = previous_block.total_votes + cv_quantity
 
-        return bblock
-
-    @transaction.atomic
-    def add(self):
-        if not self.shouldAddBlock():
-            return
-
-        bblock = self.prepareBBlock()
         ret = self.shouldIncludeElectors(bblock)
         if not ret[0]:
             bblock.electors = json.dumps([], cls=DjangoJSONEncoder)
             bblock.reason = ret[1]
+            Voted.objects.filter(hash_val='x').update(hash_val=None)
 
         bblock.block_hash = bblock.calculateHash()
         Voted.objects.filter(hash_val='x').update(hash_val=bblock.block_hash)
@@ -222,6 +219,7 @@ class BBlockHandler():
         bblock.total_votes = 0
         bblock.block_hash = bblock.calculateHash()
         bblock.parent_hash = '0'.zfill(128)
+        bblock.reason=''
         bblock.save()
    
     @transaction.atomic

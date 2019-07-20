@@ -147,7 +147,7 @@
                     {% endfor %}
                     </tbody>
                     <tfoot>
-                        {% if genesis_database_hash_dict..database.candidates_hash == database_hash_dict.database.candidates_hash %}
+                        {% if genesis_database_hash_dict.database.candidates_hash == database_hash_dict.database.candidates_hash %}
                         <tr class="table-success hash">
                         {% else %}
                         <tr class="table-danger hash">

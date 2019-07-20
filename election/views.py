@@ -375,7 +375,7 @@ def start_election(request, template_name='election/start_election.html'):
         # Add genesis block
         BBlockHandler().add_genesis()
             
-    return render(request, template_name)
+    return redirect('home')
 
 @transaction.atomic
 @staff_member_required

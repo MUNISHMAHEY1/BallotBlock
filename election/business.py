@@ -28,10 +28,8 @@ class ElectionBusiness():
 
     def isOccurring(self):
         ec = self.getCurrentElectionConfig()
-        now = datetime.datetime.now()
-        #print(now.isoformat())
         if ec:
-            if now >= ec.start_time and now <= ec.end_time and ec.locked:
+            if ec.locked:
                 return True
         return False
         

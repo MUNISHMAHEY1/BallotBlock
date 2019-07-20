@@ -96,6 +96,18 @@ DATABASES = {
     }
 }
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'balletblock',                      
+#        'USER': 'balletblock',
+#        'PASSWORD': 'balletblock',
+#        'HOST': 'pg-local',
+#        'PORT': '5432',
+#    }
+#}
+
+
 # DATABASE_ROUTERS = ['balletblock.router.DatabaseRouter']
 
 
