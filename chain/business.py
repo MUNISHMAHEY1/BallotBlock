@@ -137,9 +137,18 @@ class BBlockHandler():
                 return True
         return False
     
-    def checkGuessRate(self, bblock):
+    #def checkGuessRate(self, bblock):
         #TODO: Implement guess rate validation
-        return False
+    #    return False
+        
+    def checkGuessRate(self,votes_new_block, elector_qty):
+        #Highest No of votes -> new block votes - old block votes / no of voters 
+        last_block = ast.literal_eval(BBlock.objects.all().order_by('-timestamp_iso')[0].candidate_votes) #ast.literal converts string to list or dictionary easily
+        old_block_votes=0
+        for i in last_block:
+            old_block_votes+=i['quantity']
+        guess_rate_val=(int(votes_new_block)-int(old_block_votes))/int(elector_qty)
+        return (guess_rate_val)
 
     def shouldIncludeElectors(self, bblock):
         if not self.checkMinVotes(bblock):
