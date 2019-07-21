@@ -11,7 +11,6 @@ from django.db import transaction, DatabaseError
 import datetime
 from election.business import ElectionBusiness
 
-
 class HashCalculator():
 
     def databaseHash(self):
@@ -139,25 +138,32 @@ class BBlockHandler():
                 return True
         return False
     
-    def checkGuessRate(self,votes_new_block, elector_qty):
-        #TODO: Implement guess rate validation - Is this working ?
-        #Highest No of votes -> new block votes - old block votes / no of voters 
-        last_block = ast.literal_eval(BBlock.objects.all().order_by('-timestamp_iso')[0].candidate_votes) #ast.literal converts string to list or dictionary easily
-        old_block_votes=0
-        for i in last_block:
-            old_block_votes+=i['quantity']
-        guess_rate_val=(int(votes_new_block)-int(old_block_votes))/int(elector_qty)
-        return (guess_rate_val)
+    def checkGuessRate(self, bblock):
+        ec = ElectionBusiness().getCurrentElectionConfig()
+        previous_block = BBlock.objects.get(block_hash=bblock.parent_hash)
+        max_difference = 0
+        i = 0
+        cv = json.loads(bblock.candidate_votes)
+        pcv = json.loads(previous_block.candidate_votes)
+        while i < len(cv):
+            if cv[i]['quantity'] - pcv[i]['quantity'] > max_difference:
+                max_difference = cv[i]['quantity'] - pcv[i]['quantity']
+            i = i + 1
+        
+        guess_rate = max_difference / ((bblock.total_votes - previous_block.total_votes) / Position.objects.count())
+        if guess_rate <= ec.guess_rate:
+            return True
+
+        return False
 
     def shouldIncludeElectors(self, bblock):
         if not self.checkMinVotes(bblock):
             return (False, 'Number of electors rule is not attended.')
-        #if not self.checkGuessRate(bblock):
-        #    return (False, 'Guess rate rule is not attended.')
+        if not self.checkGuessRate(bblock):
+            return (False, 'Guess rate rule is not attended.')
         return (True, '')
 
 
-    @transaction.atomic
     def add(self):
         if not self.shouldAddBlock():
             return
@@ -179,30 +185,32 @@ class BBlockHandler():
         bblock.timestamp_iso = datetime.datetime.now().isoformat()
         same_qtt_votes = False
         cv_quantity = 0
-        while not same_qtt_votes:
-            # Workaround to lock electors who will be locked.
-            Voted.objects.filter(hash_val__isnull=True).update(hash_val='x')
-            electors = list(Voted.objects.filter(hash_val='x').values())
-            candidate_votes = list(CandidateVote.objects.filter().values())
-            cv_quantity = self.__count_votes(candidate_votes)
-            cv_quantity = cv_quantity - previous_block.total_votes
-            if cv_quantity == (len(electors) * Position.objects.count()):
-                same_qtt_votes = True
 
-        bblock.candidate_votes = json.dumps(candidate_votes, cls=DjangoJSONEncoder)
-        bblock.electors = json.dumps(electors, cls=DjangoJSONEncoder)
-        bblock.parent_hash = previous_block.block_hash
-        bblock.total_votes = previous_block.total_votes + cv_quantity
+        with transaction.atomic():
+            while not same_qtt_votes:
+                # Workaround to lock electors who will be locked.
+                Voted.objects.filter(hash_val__isnull=True).update(hash_val='x')
+                electors = list(Voted.objects.filter(hash_val='x').values('id', 'elector_id', 'system_signature').order_by('id'))
+                candidate_votes = list(CandidateVote.objects.filter().values('id', 'candidate_id', 'quantity').order_by('id'))
+                cv_quantity = self.__count_votes(candidate_votes)
+                cv_quantity = cv_quantity - previous_block.total_votes
+                if cv_quantity == (len(electors) * Position.objects.count()):
+                    same_qtt_votes = True
 
-        ret = self.shouldIncludeElectors(bblock)
-        if not ret[0]:
-            bblock.electors = json.dumps([], cls=DjangoJSONEncoder)
-            bblock.reason = ret[1]
-            Voted.objects.filter(hash_val='x').update(hash_val=None)
+            bblock.candidate_votes = json.dumps(candidate_votes, cls=DjangoJSONEncoder)
+            bblock.electors = json.dumps(electors, cls=DjangoJSONEncoder)
+            bblock.parent_hash = previous_block.block_hash
+            bblock.total_votes = previous_block.total_votes + cv_quantity
 
-        bblock.block_hash = bblock.calculateHash()
-        Voted.objects.filter(hash_val='x').update(hash_val=bblock.block_hash)
-        bblock.save()
+            ret = self.shouldIncludeElectors(bblock)
+            if not ret[0]:
+                bblock.electors = json.dumps([], cls=DjangoJSONEncoder)
+                bblock.reason = ret[1]
+                Voted.objects.filter(hash_val='x').update(hash_val=None)
+
+            bblock.block_hash = bblock.calculateHash()
+            Voted.objects.filter(hash_val='x').update(hash_val=bblock.block_hash)
+            bblock.save()
 
     def __count_votes(self, candidate_votes):
         cv_quantity = 0
@@ -210,20 +218,21 @@ class BBlockHandler():
             cv_quantity += cv['quantity']
         return cv_quantity
 
-    @transaction.atomic
+    
     def add_genesis(self):
-        hc = HashCalculator()
-        #bblock = BBlock.objects.create()
-        bblock = BBlock()
-        bblock.database_hash = hc.databaseHash()
-        bblock.hash_of_database_hash = bblock.calculateHashOfDatabaseHash()
-        bblock.source_code_hash = hc.sourceCodeHash()
-        bblock.hash_of_source_code_hash = bblock.calculateHashOfSourceCodeHash()
-        bblock.electors = json.dumps(list(Voted.objects.all().values()), cls=DjangoJSONEncoder)
-        bblock.candidate_votes = json.dumps(list(CandidateVote.objects.all().values()), cls=DjangoJSONEncoder)
-        bblock.timestamp_iso = datetime.datetime.now().isoformat()
-        bblock.total_votes = 0
-        bblock.block_hash = bblock.calculateHash()
-        bblock.parent_hash = '0'.zfill(128)
-        bblock.reason=''
-        bblock.save()
+        with transaction.atomic():
+            hc = HashCalculator()
+            #bblock = BBlock.objects.create()
+            bblock = BBlock()
+            bblock.database_hash = hc.databaseHash()
+            bblock.hash_of_database_hash = bblock.calculateHashOfDatabaseHash()
+            bblock.source_code_hash = hc.sourceCodeHash()
+            bblock.hash_of_source_code_hash = bblock.calculateHashOfSourceCodeHash()
+            bblock.electors = json.dumps(list(Voted.objects.all().values()), cls=DjangoJSONEncoder)
+            bblock.candidate_votes = json.dumps(list(CandidateVote.objects.all().values()), cls=DjangoJSONEncoder)
+            bblock.timestamp_iso = datetime.datetime.now().isoformat()
+            bblock.total_votes = 0
+            bblock.block_hash = bblock.calculateHash()
+            bblock.parent_hash = '0'.zfill(128)
+            bblock.reason=''
+            bblock.save()

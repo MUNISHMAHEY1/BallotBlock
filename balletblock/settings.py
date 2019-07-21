@@ -88,24 +88,24 @@ WSGI_APPLICATION = 'balletblock.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'election.sqlite3'),
-        #'NAME': ':memory:'
-    }
-}
-
 #DATABASES = {
 #    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'balletblock',                      
-#        'USER': 'balletblock',
-#        'PASSWORD': 'balletblock',
-#        'HOST': 'pg-local',
-#        'PORT': '5432',
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'election.sqlite3'),
+#        #'NAME': ':memory:'
 #    }
 #}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'balletblock',                      
+        'USER': 'balletblock',
+        'PASSWORD': 'balletblock',
+        'HOST': 'pg-local',
+        'PORT': '5432',
+    }
+}
 
 
 # DATABASE_ROUTERS = ['balletblock.router.DatabaseRouter']
