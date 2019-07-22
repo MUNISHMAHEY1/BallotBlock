@@ -70,7 +70,7 @@ def config_mock_election(request, elector_quantity=501, template_name='mock_elec
 
     # Create "elector_quantity" of electors
     # username: userXXX
-    # pass: BalletBlockXXX
+    # pass: BallotBlockXXX
     # where XXX is ther user number from 001 to elector_quantity
 
     i = 1
@@ -78,8 +78,8 @@ def config_mock_election(request, elector_quantity=501, template_name='mock_elec
     user_list = []
     while i < elector_quantity:
         username = ''.join(('user', str(i).zfill(s)))
-        email = ''.join((username, '@balletblock.com'))
-        password = make_password(''.join(('BalletBlock', str(i).zfill(s) )), None, 'md5')
+        email = ''.join((username, '@ballotblock.com'))
+        password = make_password(''.join(('BallotBlock', str(i).zfill(s) )), None, 'md5')
         user_list.append(User(username=username,
                                  email=email,
                                  password=password,

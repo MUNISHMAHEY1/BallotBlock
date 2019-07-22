@@ -1,3 +1,3 @@
-# BalletBlock
+# BallotBlock
 
 A blockchain voting system 

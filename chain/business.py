@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 import hashlib
 import json
 import os
-from balletblock import settings
+from ballotblock import settings
 from django.db import transaction, DatabaseError
 import datetime
 from election.business import ElectionBusiness
