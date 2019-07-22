@@ -12,7 +12,7 @@ def canModify(sender, instance, **kwargs):
         raise ValidationError('Add more than one election config is forbidden')
 
     eb = ElectionBusiness()
-    if eb.isOccurring():
-        raise ValidationError('Election is occourring and can not be changed.')
+    if eb.isLocked():
+        raise ValidationError('Election is locked and can not be changed.')
 
 

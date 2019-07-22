@@ -11,7 +11,7 @@ class ElectionBusiness():
         return None
 
     def canModify(self, request=None):
-        if self.isOccurring():
+        if self.isLocked():
             if request:
                 msg = 'Election is locked and end time is {}'.format(ec.end_time.isoformat())
                 messages.error(request, msg)
