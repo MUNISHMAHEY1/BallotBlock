@@ -103,6 +103,8 @@ class BBlockHandler():
         # While election is occurring, new blocks should be generated.
         if eb.isOccurring():
             return True
+        if eb.isLocked() and eb.hadFinished():
+            return True
         ec = eb.getCurrentElectionConfig()
         if not ec:
             raise DatabaseError('There is not Election Configuration for the current election')
