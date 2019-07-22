@@ -28,7 +28,7 @@
 </style>
     {% render_table elector_table %}
 
-    {% if not election_is_occurring %}
+    {% if not election_is_locked %}
     <div class="row">
         <div class="col-md-2">
             <a class="btn btn-primary"  href="{% url 'elector_add' %}">Add</a>

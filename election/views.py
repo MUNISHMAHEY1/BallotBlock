@@ -21,8 +21,8 @@ from django.contrib.auth.hashers import make_password
 @staff_member_required
 def config_mock_election(request, elector_quantity=501, template_name='mock_election.html'):
 
-    if request.election_is_occurring:
-        messages.error(request, 'Election is occurring')
+    if request.election_is_locked:
+        messages.error(request, 'Election is locked')
         return render(request, template_name)
 
     # Delete tables of resutls
@@ -109,12 +109,12 @@ def electionConfiguration(request, template_name='electionconfig.html'):
         # Select all rows and get the first one.
         ec = ElectionConfig.objects.filter()[0]
 
-    if request.election_is_occurring:
-        form = ElectionConfigForm(instance=ec, readonly=request.election_is_occurring)
+    if request.election_is_locked:
+        form = ElectionConfigForm(instance=ec, readonly=request.election_is_locked)
         return render(request, template_name, {'form':form})
 
     if request.POST:
-        form = ElectionConfigForm(request.POST, instance=ec, readonly=request.election_is_occurring)
+        form = ElectionConfigForm(request.POST, instance=ec, readonly=request.election_is_locked)
         if form.is_valid():
             form.save()
             msg = 'Election configuration saved'
@@ -129,15 +129,15 @@ def electionConfiguration(request, template_name='electionconfig.html'):
 @staff_member_required
 def candidate(request, template_name='candidate/candidate_list.html'):
     candidate_table = CandidateTable(Candidate.objects.all())
-    # Exclude delete column if election is occurring
-    if request.election_is_occurring:
+    # Exclude delete column if election is locked
+    if request.election_is_locked:
         candidate_table.exclude = ('delete')
     return render(request, template_name, {'candidate_table':candidate_table })
 
 @staff_member_required
 def candidate_delete(request, id):
-    if request.election_is_occurring:
-        msg = 'Election is occurring. Delete candidates is not allowed.'
+    if request.election_is_locked:
+        msg = 'Election is locked. Delete candidates is not allowed.'
         messages.error(request, msg)
         return redirect('candidate')
 
@@ -151,8 +151,8 @@ def candidate_delete(request, id):
 
 @staff_member_required
 def candidate_add(request, template_name='candidate/candidate_form.html'):
-    if request.election_is_occurring:
-        msg = 'Election is occurring. Candidate modifications are not allowed.'
+    if request.election_is_locked:
+        msg = 'Election is locked. Candidate modifications are not allowed.'
         messages.warning(request, msg)
         return redirect('candidate')
 
@@ -171,34 +171,34 @@ def candidate_add(request, template_name='candidate/candidate_form.html'):
 def candidate_change(request, id, template_name='candidate/candidate_form.html'):
     candidate = Candidate.objects.get(id=int(id))
     if request.POST:
-        if request.election_is_occurring:
-            msg = 'Election is occurring. Candidate modifications are not allowed.'
+        if request.election_is_locked:
+            msg = 'Election is locked. Candidate modifications are not allowed.'
             messages.error(request, msg)
             return redirect('candidate')
 
-        form = CandidateForm(request.POST, instance=candidate, readonly=request.election_is_occurring)
+        form = CandidateForm(request.POST, instance=candidate, readonly=request.election_is_locked)
         if form.is_valid():
             form.save()
             return redirect('candidate')
         else:
             return render(request, template_name, {'form':form})
     else:
-        # If election is occurring, the form will be readonly
-        form = CandidateForm(instance=candidate, readonly=request.election_is_occurring)
+        # If election is locked, the form will be readonly
+        form = CandidateForm(instance=candidate, readonly=request.election_is_locked)
     return render(request, template_name, {'form':form})
 
 @staff_member_required
 def position(request, template_name='position/position_list.html'):
     position_table = PositionTable(Position.objects.all())
-    # Exclude delete column if election is occurring
-    if request.election_is_occurring:
+    # Exclude delete column if election is locked
+    if request.election_is_locked:
         position_table.exclude = ('delete')
     return render(request, template_name, {'position_table':position_table })
 
 @staff_member_required
 def position_delete(request, id):
-    if request.election_is_occurring:
-        msg = 'Election is occurring. Delete position is not allowed.'
+    if request.election_is_locked:
+        msg = 'Election is locked. Delete position is not allowed.'
         messages.error(request, msg)
         return redirect('position')
 
@@ -212,8 +212,8 @@ def position_delete(request, id):
 
 @staff_member_required
 def position_add(request, template_name='position/position_form.html'):
-    if request.election_is_occurring:
-        msg = 'Election is occurring. Position modifications are not allowed.'
+    if request.election_is_locked:
+        msg = 'Election is locked. Position modifications are not allowed.'
         messages.warning(request, msg)
         return redirect('position')
 
@@ -232,20 +232,20 @@ def position_add(request, template_name='position/position_form.html'):
 def position_change(request, id, template_name='position/position_form.html'):
     position = Position.objects.get(id=int(id))
     if request.POST:
-        if request.election_is_occurring:
-            msg = 'Election is occurring. Position modifications are not allowed.'
+        if request.election_is_locked:
+            msg = 'Election is locked. Position modifications are not allowed.'
             messages.error(request, msg)
             return redirect('position')
 
-        form = PositionForm(request.POST, instance=position, readonly=request.election_is_occurring)
+        form = PositionForm(request.POST, instance=position, readonly=request.election_is_locked)
         if form.is_valid():
             form.save()
             return redirect('position')
         else:
             return render(request, template_name, {'form':form})
     else:
-        # If election is occurring, the form will be readonly
-        form = PositionForm(instance=position, readonly=request.election_is_occurring)
+        # If election is locked, the form will be readonly
+        form = PositionForm(instance=position, readonly=request.election_is_locked)
     return render(request, template_name, {'form':form})
 
 
@@ -254,15 +254,15 @@ def position_change(request, id, template_name='position/position_form.html'):
 @staff_member_required
 def elector(request, template_name='elector/elector_list.html'):
     elector_table = ElectorTable(Elector.objects.all())
-    # Exclude delete column if election is occurring
-    if request.election_is_occurring:
+    # Exclude delete column if election is locked
+    if request.election_is_locked:
         elector_table.exclude = ('delete')
     return render(request, template_name, {'elector_table':elector_table })
 
 @staff_member_required
 def elector_delete(request, id):
-    if request.election_is_occurring:
-        msg = 'Election is occurring. Delete electors is not allowed.'
+    if request.election_is_locked:
+        msg = 'Election is locked. Delete electors is not allowed.'
         messages.error(request, msg)
         return redirect('elector')
 
@@ -276,8 +276,8 @@ def elector_delete(request, id):
 
 @staff_member_required
 def elector_add(request, template_name='elector/elector_form.html'):
-    if request.election_is_occurring:
-        msg = 'Election is occurring. Elector modifications are not allowed.'
+    if request.election_is_locked:
+        msg = 'Election is locked. Elector modifications are not allowed.'
         messages.warning(request, msg)
         return redirect('elector')
 
@@ -296,20 +296,20 @@ def elector_add(request, template_name='elector/elector_form.html'):
 def elector_change(request, id, template_name='elector/elector_form.html'):
     elector = Elector.objects.get(id=int(id))
     if request.POST:
-        if request.election_is_occurring:
-            msg = 'Election is occurring. Elector modifications are not allowed.'
+        if request.election_is_locked:
+            msg = 'Election is locked. Elector modifications are not allowed.'
             messages.error(request, msg)
             return redirect('elector')
 
-        form = ElectorForm(request.POST, instance=elector, readonly=request.election_is_occurring)
+        form = ElectorForm(request.POST, instance=elector, readonly=request.election_is_locked)
         if form.is_valid():
             form.save()
             return redirect('elector')
         else:
             return render(request, template_name, {'form':form})
     else:
-        # If election is occurring, the form will be readonly
-        form = ElectorForm(instance=elector, readonly=request.election_is_occurring)
+        # If election is locked, the form will be readonly
+        form = ElectorForm(instance=elector, readonly=request.election_is_locked)
     return render(request, template_name, {'form':form})
 
 
@@ -319,8 +319,8 @@ def start_election(request, template_name='election/start_election.html'):
 
     has_error = False
 
-    # If election is occurring, the tests will not be executed.
-    if request.election_is_occurring:
+    # If election is locked, the tests will not be executed.
+    if request.election_is_locked:
         msg = 'Election has already started'
         messages.warning(request, msg)
         return render(request, template_name)
@@ -380,8 +380,8 @@ def start_election(request, template_name='election/start_election.html'):
 @transaction.atomic
 @staff_member_required
 def clean_election(request, template_name='election/clean_election.html'):
-    if request.election_is_occurring:
-        messages.error(request, 'Election is occurring')
+    if request.election_is_locked:
+        messages.error(request, 'Election is locked')
         return render(request, template_name)
 
     # Delete tables of resutls

@@ -47,7 +47,7 @@ def vote(request, template_name='vote.html'):
             context['positions'] = positions
             context['quantity_of_positions'] = positions.count()
     else:
-        messages.warning(request, 'Election is not open yet.')
+        messages.error(request, 'Election has finished.')
     
     return render(request, template_name, context)
 

@@ -26,10 +26,18 @@ class ElectionBusiness():
             return False
         return True
 
+    def isLocked(self):
+        ec = self.getCurrentElectionConfig()
+        if ec:
+            return ec.locked
+        return False
+
     def isOccurring(self):
         ec = self.getCurrentElectionConfig()
         if ec:
-            if ec.locked:
+            now = datetime.datetime.now()
+            if ec.start_time.isoformat() >= now.isoformat() and \
+                    now.isoformat() <= ec.end_time.isoformat() and ec.locked:
                 return True
         return False
         

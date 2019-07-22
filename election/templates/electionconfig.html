@@ -69,7 +69,7 @@
     <form method="post" action="{{ request.path }}">
         {% crispy form %}
 
-        {% if not election_is_occurring %}
+        {% if not election_is_locked %}
             <input type="submit" class="btn btn-primary" value="Save">
         {% endif %}
 

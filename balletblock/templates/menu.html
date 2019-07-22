@@ -14,7 +14,7 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                 <a class="dropdown-item" href="{% url 'block_list' %}">Block Chain</a>
                 <a class="dropdown-item" href="{% url 'electionconfig' %}">Configuration</a>
-                {% if not election_is_occurring %}
+                {% if not election_is_locked %}
                   <a class="dropdown-item" href="{% url 'start_election' %}">Start Election</a>
                   <a class="dropdown-item" href="{% url 'election_results' %}">Results</a>
                   <div class="dropdown-divider"></div>
