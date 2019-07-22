@@ -103,29 +103,33 @@ class BBlockHandler():
         # While election is occurring, new blocks should be generated.
         if eb.isOccurring():
             return True
-        ec = ElectionBusiness().getCurrentElectionConfig()
+        ec = eb.getCurrentElectionConfig()
         if not ec:
             raise DatabaseError('There is not Election Configuration for the current election')
         # Independently of election is occurring, if we have votes, a new block must be generated.
         if Voted.objects.filter(hash_val__isnull=True).count() > 0:
             return True
-        # If election ended and we do not have votes we do not need to generate a block.
+        # If election is not occurring and we do not have votes we do not need to generate a block.
         return False
     
     def shouldAddLastBlock(self):
         if self.isLastBlock():
-            ec = ElectionBusiness().getCurrentElectionConfig()
-            if not ec.isOccurring() and ec.isLocked():
-                return True
             if Voted.objects.count() == Elector.objects.count():
                 return True
+        eb = ElectionBusiness()
+        if eb.isLocked() and eb.hadFinished():
+            return True
+
         return False
     
     def isLastBlock(self):
+        eb =  ElectionBusiness()
         if self.shouldAddBlock():
-            ec = ElectionBusiness().getCurrentElectionConfig()
+            ec = eb.getCurrentElectionConfig()
             if (Voted.objects.count()-ec.min_votes_in_last_block)/Elector.objects.count() > ec.attendance_rate:
                 return True
+        if eb.isLocked() and eb.hadFinished():
+            return True
         return False
     
     def checkMinVotes(self, bblock):
@@ -170,7 +174,7 @@ class BBlockHandler():
             return
 
         finish_election = False
-        if shouldAddLastBlock():
+        if self.shouldAddLastBlock():
             finish_election = True
 
         if BBlock.objects.all().count() == 0:
@@ -230,7 +234,7 @@ class BBlockHandler():
             bblock.save()
 
             if finish_election:
-                ec = ElectionBusiness.getCurrentElectionConfig()
+                ec = ElectionBusiness().getCurrentElectionConfig()
                 ec.locked = False
                 ec.save()
 

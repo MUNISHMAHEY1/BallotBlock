@@ -5,6 +5,11 @@
 <style>
     .card {font-family: monospace; font-size: 13px;}
 </style>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
 {% endblock extrahead %}
 
 {% block breadcrumb %}
@@ -82,7 +87,7 @@
 
 <div class="row">
     <div class="col-md-4">
-        <a href="{% url 'block_add' %}" class="btn btn-primary">Add Block</a>
+        <a href="{% url 'block_add' %}" class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="This button should no exists in a real application">Add Block</a>
     </div>
 </div>
 

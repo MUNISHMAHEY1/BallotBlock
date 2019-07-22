@@ -40,4 +40,12 @@ class ElectionBusiness():
                     now.isoformat() <= ec.end_time.isoformat() and ec.locked:
                 return True
         return False
+
+    def hadFinished(self):
+        ec = self.getCurrentElectionConfig()
+        if ec:
+            now = datetime.datetime.now()
+            if ec.end_time.isoformat() < now.isoformat():
+                return True
+        return False
         
