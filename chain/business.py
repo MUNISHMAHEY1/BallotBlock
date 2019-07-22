@@ -162,6 +162,9 @@ class BBlockHandler():
         return False
 
     def shouldIncludeElectors(self, bblock):
+        if self.shouldAddLastBlock():
+            return (True, '')
+            
         if not self.checkMinVotes(bblock):
             return (False, 'Number of electors rule is not attended.')
         if not self.checkGuessRate(bblock):

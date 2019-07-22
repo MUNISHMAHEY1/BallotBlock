@@ -36,7 +36,7 @@ class ElectionBusiness():
         ec = self.getCurrentElectionConfig()
         if ec:
             now = datetime.datetime.now()
-            if ec.start_time.isoformat() >= now.isoformat() and \
+            if ec.start_time.isoformat() <= now.isoformat() and \
                     now.isoformat() <= ec.end_time.isoformat() and ec.locked:
                 return True
         return False
