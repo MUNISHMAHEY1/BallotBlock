@@ -266,7 +266,7 @@ class BBlockHandler():
             bblock.candidate_votes = json.dumps(list(CandidateVote.objects.all().values('id', 'candidate_id', 'quantity').order_by('id')), cls=DjangoJSONEncoder)
             bblock.timestamp_iso = datetime.datetime.now().isoformat()
             bblock.total_votes = 0
+            bblock.reason=''
             bblock.block_hash = bblock.calculateHash()
             bblock.parent_hash = '0'.zfill(128)
-            bblock.reason=''
             bblock.save()

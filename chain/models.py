@@ -35,6 +35,7 @@ class BBlock(models.Model):
           m.update(self.source_code_hash.encode("utf-8"))
           m.update(self.candidate_votes.encode("utf-8"))
           m.update(self.electors.encode("utf-8"))
+          m.update(self.reason.encode("utf-8"))
           m.update(self.timestamp_iso.encode("utf-8"))
           m.update(str(self.total_votes).encode("utf-8"))
           return m.hexdigest()
@@ -48,8 +49,3 @@ class BBlock(models.Model):
           m = hashlib.sha512()
           m.update(self.source_code_hash.encode("utf-8"))
           return m.hexdigest()
-
-
-
-
-     
