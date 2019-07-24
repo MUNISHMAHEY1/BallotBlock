@@ -267,6 +267,6 @@ class BBlockHandler():
             bblock.timestamp_iso = datetime.datetime.now().isoformat()
             bblock.total_votes = 0
             bblock.reason=''
-            bblock.block_hash = bblock.calculateHash()
             bblock.parent_hash = '0'.zfill(128)
+            bblock.block_hash = bblock.calculateHash()
             bblock.save()
