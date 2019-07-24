@@ -123,13 +123,14 @@
   </ul>
 </div>
 </div>
-
+{% if bblock_list|length > 0 %}
 <div class="row" style="margin-bottom: 25px;">
     <div class="col-md-12">
         <a href="{% url 'block_add' %}" class="btn btn-primary" data-toggle="tooltip" data-placement="right" title="This button should no exists in a real application">Add Block</a>
         <a href="{% url 'validate_chain' %}" class="btn btn-secondary">Validate Chain</a>
     </div>
 </div>
+{% endif %}
 
 
 {% endblock content %}
