@@ -10,4 +10,5 @@ urlpatterns = [
     path('block_add', views.block_add, name='block_add'),
     path('source_code_hash/<int:bblock_id>', views.source_code_hash, name='source_code_hash'),
     path('database_hash/<int:bblock_id>', views.database_hash, name='database_hash'),
+    path('block_election_result/<int:bblock_id>', views.block_election_result, name='block_election_result'),
 ]

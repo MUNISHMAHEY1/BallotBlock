@@ -60,7 +60,9 @@
                             </li>
                             <li class="list-group-item text-white bg-info">
                                 <h6 class="card-subtitle">Election results:</h6>
-                                {{bblock.candidate_votes}}
+                                <a href="{% url 'block_election_result' bblock_id=bblock.id %}" class="text-white" target="_blank">
+                                  {{bblock.candidate_votes}}
+                                </a>
                             </li>
                             <li class="list-group-item text-white bg-info">
                                 <h6 class="card-subtitle">Electors who voted:</h6>

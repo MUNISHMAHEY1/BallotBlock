@@ -7,6 +7,7 @@ from django.core import serializers
 from django.utils.safestring import mark_safe
 from django.contrib import messages
 from django.core.paginator import Paginator
+from election.models import Position, Candidate
 
 def block_list(request, template_name='block_list.html'):
     bblocks = BBlock.objects.all()
@@ -71,3 +72,30 @@ def validate_chain(request):
     if valid:
         messages.success(request, 'Chain is valid')
     return redirect('block_list')
+
+
+def block_election_result(request, bblock_id, template_name='block_election_result.html'):
+    bblock = BBlock.objects.get(id=int(bblock_id))
+    candidate_votes_dict = json.loads(bblock.candidate_votes)
+    
+    data = []
+    position_list = []
+    positions = Position.objects.all()
+    for p in positions:
+        for cv in candidate_votes_dict:
+            candidate = Candidate.objects.get(id=int(cv['candidate_id']))
+            if candidate.position == p:
+                position_list.append({'candidate__name':candidate.name,
+                        'candidate__position__description': p.description,
+                        'quantity': cv['quantity']
+                        })
+        data.append(json.dumps(position_list, cls=DjangoJSONEncoder) )
+        position_list = []
+    '''
+    for p in positions:
+        candidate_vote = CandidateVote.objects.filter(candidate__position=p).values('candidate__name', 'candidate__position__description', 'quantity' )
+        candidate_vote_json_str = json.dumps(list(candidate_vote), cls=DjangoJSONEncoder)
+        data.append(candidate_vote_json_str)
+    '''
+  
+    return render(request, template_name, context={'results_data':json.dumps(data, cls=DjangoJSONEncoder), 'positions':positions})
